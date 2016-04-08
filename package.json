@@ -1,0 +1,21 @@
+{
+  "jspm": {
+    "dependencies": {
+      "react": "npm:react@^15.0.1"
+    },
+    "devDependencies": {
+      "babel": "npm:babel-core@^5.8.24",
+      "babel-runtime": "npm:babel-runtime@^5.8.24",
+      "core-js": "npm:core-js@^1.1.4"
+    }
+  },
+  "dependencies": {
+    "gulp": "^3.9.1",
+    "gulp-compile-handlebars": "^0.6.1",
+    "gulp-rename": "^1.2.2",
+    "gulp-sass": "^2.2.0"
+  },
+  "devDependencies": {
+    "gulp-connect": "^3.2.2"
+  }
+}
