@@ -4,6 +4,8 @@ var handlebars = require('gulp-compile-handlebars');
 var rename = require("gulp-rename");
 var sass = require('gulp-sass');
 var exec = require('child_process').execSync;
+var Builder = require('systemjs-builder');
+var rev = require('gulp-rev');
 
 gulp.task('default', ['serve']);
 
@@ -36,4 +38,30 @@ gulp.task('sass', () => {
 
 gulp.task('clean', function () {
   return exec('rm -rf ./dist');
+});
+
+gulp.task('build', () => {
+  const buildPath = './dist/static/js';
+
+  return new Promise(resolve => {
+    var builder = new Builder({
+      baseURL: './'
+    });
+    return builder.loadConfig('config.js')
+      .then(() => {
+        return builder.buildStatic('./src/index.js', `${buildPath}/app.js`, {
+          minify: true,
+          sourceMaps: false,
+          runtime: false
+        });
+      }).then(() => {
+        return gulp.src(`${buildPath}/app.js`)
+          .pipe(rev())
+          .pipe(gulp.dest(buildPath))
+          .on('end', () => {
+            exec(`rm ${buildPath}/app.js`);
+            resolve();
+          });
+      });
+  });
 });
