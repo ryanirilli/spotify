@@ -1,7 +1,8 @@
 {
   "jspm": {
     "dependencies": {
-      "react": "npm:react@^15.0.1"
+      "react": "npm:react@^15.0.1",
+      "react-dom": "npm:react-dom@^15.0.1"
     },
     "devDependencies": {
       "babel": "npm:babel-core@^5.8.24",
@@ -15,7 +16,8 @@
     "gulp-rename": "^1.2.2",
     "gulp-rev": "^7.0.0",
     "gulp-sass": "^2.2.0",
-    "systemjs-builder": "^0.15.15"
+    "systemjs-builder": "^0.15.15",
+    "yargs": "^4.6.0"
   },
   "devDependencies": {
     "gulp-connect": "^3.2.2"

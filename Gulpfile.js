@@ -1,67 +1,143 @@
-var gulp = require('gulp');
-var connect = require('gulp-connect');
-var handlebars = require('gulp-compile-handlebars');
-var rename = require("gulp-rename");
-var sass = require('gulp-sass');
-var exec = require('child_process').execSync;
-var Builder = require('systemjs-builder');
-var rev = require('gulp-rev');
+/**************************************
+ * Main gulp commands
+ * -----------------------
+ * gulp serve
+ * gulp serve --prod
+ * gulp build
+ * gulp test
+ *
+ * ***********************************/
 
-gulp.task('default', ['serve']);
+const gulp = require('gulp');
+const connect = require('gulp-connect');
+const handlebars = require('gulp-compile-handlebars');
+const rename = require("gulp-rename");
+const sass = require('gulp-sass');
+const exec = require('child_process').execSync;
+const Builder = require('systemjs-builder');
+const rev = require('gulp-rev');
+const readdirSync = require('fs').readdirSync;
+const argv = require('yargs').argv;
+const path = require('path');
 
-gulp.task('serve', ['render'],() => {
-  connect.server({
-    root: './dist',
-    middleware(connect) {
-      return [
-        connect().use('/static', connect.static('./dist/static')),
-        connect().use('/config.js', connect.static('config.js')),
-        connect().use('/jspm_packages', connect.static('jspm_packages')),
-        connect().use('/index.js', connect.static('./src/index.js'))
-      ];
-    }
+const buildDir = './dist';
+const staticAssetsDir = `${buildDir}/static`;
+const cssDir = `${staticAssetsDir}/css`;
+const jsDir = `${staticAssetsDir}/js`;
+
+gulp.task('default', ['logTasks']);
+
+gulp.task('logTasks', () => {
+  process.nextTick(() => {
+    console.log();
+    console.log('gulp serve           serves your app locally');
+    console.log('gulp serve --prod    serves the production build of your app locally');
+    console.log('gulp build           bundles your app for production');
+    console.log('gulp test            runs your tests');
+    console.log();
   });
 });
 
-gulp.task('render', ['clean', 'sass'], () => {
-  return gulp.src('src/index.hbs')
-    .pipe(handlebars())
-    .pipe(rename('index.html'))
-    .pipe(gulp.dest(`dist`));
-});
-
-gulp.task('sass', () => {
-  return gulp.src('src/styles/app.scss')
-    .pipe(sass({outputStyle: 'compressed'}))
-    .pipe(gulp.dest('dist/static/css'));
-});
-
-gulp.task('clean', function () {
-  return exec('rm -rf ./dist');
+gulp.task('serve', () => {
+  clean()
+    .then(compileSass)
+    .then(bundleAssets)
+    .then(render)
+    .then(startServer);
 });
 
 gulp.task('build', () => {
-  const buildPath = './dist/static/js';
+  clean()
+    .then(bundleAssets.bind(this, true))
+    .then(render)
+});
 
+gulp.task('test',  () => {});
+
+
+function bundleAssets(shouldCompileJs) {
+  const promises = [];
+  const isBuild = shouldCompileJs || argv.prod;
+  promises.push(compileSass());
+  if(isBuild) {
+    promises.push(compileJs());
+  }
+  return Promise.all(promises);
+}
+
+function clean() {
+  return new Promise((resolve, reject) => {
+    exec(`rm -rf ${buildDir}`);
+    resolve();
+  });
+}
+
+function compileSass() {
+  return new Promise(resolve => {
+    gulp.src('src/styles/app.scss')
+    .pipe(sass({outputStyle: 'compressed'}))
+    .pipe(rev())
+    .pipe(gulp.dest(cssDir))
+    .on('end', resolve);
+  });
+}
+
+function compileJs() {
   return new Promise(resolve => {
     var builder = new Builder({
       baseURL: './'
     });
+
     return builder.loadConfig('config.js')
       .then(() => {
-        return builder.buildStatic('./src/index.js', `${buildPath}/app.js`, {
+        return builder.buildStatic('./src/index.js', `${jsDir}/app.js`, {
           minify: true,
           sourceMaps: false,
           runtime: false
         });
       }).then(() => {
-        return gulp.src(`${buildPath}/app.js`)
+        return gulp.src(`${jsDir}/app.js`)
           .pipe(rev())
-          .pipe(gulp.dest(buildPath))
+          .pipe(gulp.dest(jsDir))
           .on('end', () => {
-            exec(`rm ${buildPath}/app.js`);
+            exec(`rm ${jsDir}/app.js`);
             resolve();
           });
       });
   });
-});
+}
+
+function render() {
+  return new Promise(resolve => {
+    const data = {
+      appCss: readdirSync(cssDir)[0]
+    };
+
+    if (argv.prod) {
+      Object.assign(data, {
+        appJs: readdirSync(jsDir)[0],
+        isProd: true
+      });
+    }
+
+    gulp.src('src/index.hbs')
+      .pipe(handlebars(data))
+      .pipe(rename('index.html'))
+      .pipe(gulp.dest(buildDir))
+      .on('end', resolve);
+  });
+}
+
+function startServer() {
+  connect.server({
+    root: './dist',
+    middleware(connect) {
+      return [
+        connect().use('/static',        connect.static('./dist/static')),
+        connect().use('/config.js',     connect.static('config.js')),
+        connect().use('/jspm_packages', connect.static('jspm_packages')),
+        connect().use('/index.js',      connect.static('./src/index.js'))
+      ];
+    }
+  });
+}

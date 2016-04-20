@@ -5,19 +5,19 @@
         <title>App</title>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"/>
-        <link rel="stylesheet" href="/static/css/app.css">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"/>
+        <link rel="stylesheet" href="/static/css/{{appCss}}">
     </head>
     <body>
-        <div id="app">
-            <h1>APPP</h1>
-        </div>
-
+        <div id="app">Appp</div>
+        {{#if isProd}}
+        <script src="/static/js/{{appJs}}"></script>
+        {{else}}
         <script src="../jspm_packages/system.js"></script>
         <script src="../config.js"></script>
         <script>
             System.import('index');
         </script>
-
+        {{/if}}
     </body>
 </html>
