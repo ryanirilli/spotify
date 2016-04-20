@@ -1,13 +1,3 @@
-/**************************************
- * Main gulp commands
- * -----------------------
- * gulp serve
- * gulp serve --prod
- * gulp build
- * gulp test
- *
- * ***********************************/
-
 const gulp = require('gulp');
 const connect = require('gulp-connect');
 const handlebars = require('gulp-compile-handlebars');
@@ -26,7 +16,6 @@ const cssDir = `${staticAssetsDir}/css`;
 const jsDir = `${staticAssetsDir}/js`;
 
 gulp.task('default', ['logTasks']);
-
 gulp.task('logTasks', () => {
   process.nextTick(() => {
     console.log();
@@ -40,36 +29,34 @@ gulp.task('logTasks', () => {
 
 gulp.task('serve', () => {
   clean()
-    .then(compileSass)
-    .then(bundleAssets)
+    .then(compileAssets)
     .then(render)
     .then(startServer);
 });
 
 gulp.task('build', () => {
   clean()
-    .then(bundleAssets.bind(this, true))
-    .then(render)
+    .then(compileAssets.bind(this, true))
+    .then(render);
 });
 
 gulp.task('test',  () => {});
 
-
-function bundleAssets(shouldCompileJs) {
-  const promises = [];
-  const isBuild = shouldCompileJs || argv.prod;
-  promises.push(compileSass());
-  if(isBuild) {
-    promises.push(compileJs());
-  }
-  return Promise.all(promises);
-}
-
 function clean() {
-  return new Promise((resolve, reject) => {
+  return new Promise(resolve => {
     exec(`rm -rf ${buildDir}`);
     resolve();
   });
+}
+
+function compileAssets(shouldCompileJs) {
+  const promises = [];
+  const compileJs = shouldCompileJs || argv.prod;
+  promises.push(compileSass());
+  if(compileJs) {
+    promises.push(compileJs());
+  }
+  return Promise.all(promises);
 }
 
 function compileSass() {
