@@ -23,6 +23,8 @@ const rev         = require('gulp-rev');
 const readdirSync = require('fs').readdirSync;
 const argv        = require('yargs').argv;
 const path        = require('path');
+const KarmaServer = require('karma').Server;
+const karmaConfig = require('./karma.conf.js');
 
 /************************************
  * Build Tasks
@@ -58,7 +60,9 @@ gulp.task('build', () => {
     .then(render);
 });
 
-gulp.task('test',  () => {});
+gulp.task('test',  () => {
+  new KarmaServer(karmaConfig(argv.debug)).start();
+});
 
 function clean() {
   return new Promise(resolve => {
@@ -141,10 +145,12 @@ function startServer() {
     root: './dist',
     middleware(connect) {
       return [
-        connect().use('/static',        connect.static('./dist/static')),
-        connect().use('/config.js',     connect.static('config.js')),
-        connect().use('/jspm_packages', connect.static('jspm_packages')),
-        connect().use('/index.js',      connect.static('./src/index.js'))
+        connect().use('/index.js',          connect.static('./src/index.js')),
+        connect().use('/config.js',         connect.static('./config.js')),
+        connect().use('/jspm_packages',     connect.static('./jspm_packages')),
+        connect().use('/static/img',        connect.static('./images')),
+        connect().use('/static/fonts',      connect.static('./fonts')),
+        connect().use('/src',               connect.static('./src'))
       ];
     }
   };
