@@ -10,7 +10,7 @@
     </head>
     <body>
         <div id="app">Appp</div>
-        {{#if isProd}}
+        {{#if isProdBuild}}
         <script src="/static/js/{{appJs}}"></script>
         {{else}}
         <script src="../jspm_packages/system.js"></script>

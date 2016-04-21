@@ -1,19 +1,34 @@
-const gulp = require('gulp');
-const connect = require('gulp-connect');
-const handlebars = require('gulp-compile-handlebars');
-const rename = require("gulp-rename");
-const sass = require('gulp-sass');
-const exec = require('child_process').execSync;
-const Builder = require('systemjs-builder');
-const rev = require('gulp-rev');
-const readdirSync = require('fs').readdirSync;
-const argv = require('yargs').argv;
-const path = require('path');
+'use strict'
+/************************************
+ * Configure build directory structure
+ ************************************/
 
-const buildDir = './dist';
+const buildDir        = './dist';
 const staticAssetsDir = `${buildDir}/static`;
-const cssDir = `${staticAssetsDir}/css`;
-const jsDir = `${staticAssetsDir}/js`;
+const cssDir          = `${staticAssetsDir}/css`;
+const jsDir           = `${staticAssetsDir}/js`;
+
+/************************************
+ * Require Libs
+ ************************************/
+
+const gulp        = require('gulp');
+const connect     = require('gulp-connect');
+const handlebars  = require('gulp-compile-handlebars');
+const rename      = require("gulp-rename");
+const sass        = require('gulp-sass');
+const exec        = require('child_process').execSync;
+const Builder     = require('systemjs-builder');
+const rev         = require('gulp-rev');
+const readdirSync = require('fs').readdirSync;
+const argv        = require('yargs').argv;
+const path        = require('path');
+
+/************************************
+ * Build Tasks
+ ************************************/
+
+let isProdBuild = false;
 
 gulp.task('default', ['logTasks']);
 gulp.task('logTasks', () => {
@@ -28,15 +43,18 @@ gulp.task('logTasks', () => {
 });
 
 gulp.task('serve', () => {
+  isProdBuild = argv.prod;
   clean()
     .then(compileAssets)
     .then(render)
-    .then(startServer);
+    .then(startServer)
+    .then(watch);
 });
 
 gulp.task('build', () => {
+  isProdBuild = true;
   clean()
-    .then(compileAssets.bind(this, true))
+    .then(compileAssets)
     .then(render);
 });
 
@@ -49,11 +67,10 @@ function clean() {
   });
 }
 
-function compileAssets(shouldCompileJs) {
+function compileAssets() {
   const promises = [];
-  const compileJs = shouldCompileJs || argv.prod;
   promises.push(compileSass());
-  if(compileJs) {
+  if(isProdBuild) {
     promises.push(compileJs());
   }
   return Promise.all(promises);
@@ -61,10 +78,14 @@ function compileAssets(shouldCompileJs) {
 
 function compileSass() {
   return new Promise(resolve => {
-    gulp.src('src/styles/app.scss')
-    .pipe(sass({outputStyle: 'compressed'}))
-    .pipe(rev())
-    .pipe(gulp.dest(cssDir))
+    const stream = gulp.src('src/styles/app.scss')
+    .pipe(sass({outputStyle: 'compressed'}));
+
+    if(isProdBuild) {
+     stream.pipe(rev());
+    }
+
+    stream.pipe(gulp.dest(cssDir))
     .on('end', resolve);
   });
 }
@@ -100,7 +121,7 @@ function render() {
       appCss: readdirSync(cssDir)[0]
     };
 
-    if (argv.prod) {
+    if (isProdBuild) {
       Object.assign(data, {
         appJs: readdirSync(jsDir)[0],
         isProd: true
@@ -116,7 +137,7 @@ function render() {
 }
 
 function startServer() {
-  connect.server({
+  const opts = {
     root: './dist',
     middleware(connect) {
       return [
@@ -126,5 +147,26 @@ function startServer() {
         connect().use('/index.js',      connect.static('./src/index.js'))
       ];
     }
+  };
+
+  if(!isProdBuild) {
+    Object.assign(opts, { livereload: true });
+  }
+
+  connect.server(opts);
+}
+
+function watch() {
+  gulp.watch('./src/styles/**/*.scss', () => {
+    compileSass()
+      .then(() => {
+        gulp.src(`${buildDir}/**/*.css`)
+          .pipe(connect.reload());
+      });
+  });
+
+  gulp.watch('./src/**/*', () => {
+    gulp.src('./src/index.js')
+      .pipe(connect.reload());
   });
 }
