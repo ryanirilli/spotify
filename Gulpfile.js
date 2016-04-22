@@ -7,6 +7,7 @@ const buildDir        = './dist';
 const staticAssetsDir = `${buildDir}/static`;
 const cssDir          = `${staticAssetsDir}/css`;
 const jsDir           = `${staticAssetsDir}/js`;
+const imgDir          = `${staticAssetsDir}/img`;
 
 /************************************
  * Require Libs
@@ -75,7 +76,7 @@ function compileAssets() {
   const promises = [];
   promises.push(compileSass());
   if(isProdBuild) {
-    promises.push(compileJs());
+    promises.push(compileJs().then(copyImages));
   }
   return Promise.all(promises);
 }
@@ -116,6 +117,14 @@ function compileJs() {
             resolve();
           });
       });
+  });
+}
+
+function copyImages() {
+  return new Promise(resolve => {
+    gulp.src('./img/**/*')
+      .pipe(gulp.dest(imgDir))
+      .on('end', resolve);
   });
 }
 
