@@ -16,11 +16,10 @@ jspm install
 
 ## What's included?
 
+- Gulp
 - JSPM
 - React
 - Redux
-- Inuit.css
-- Gulp
 - Karma
 - Mocha
 - Chai
