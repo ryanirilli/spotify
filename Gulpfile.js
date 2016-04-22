@@ -137,7 +137,7 @@ function render() {
     if (isProdBuild) {
       Object.assign(data, {
         appJs: readdirSync(jsDir)[0],
-        isProd: true
+        isProdBuild
       });
     }
 
