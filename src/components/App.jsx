@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 export const App = React.createClass({
   render: function() {
     return <div>
-      <h1>Appocalypse</h1>
+      <h1 ref="siteTitle">Appocalypse</h1>
     </div>    
   }
 });

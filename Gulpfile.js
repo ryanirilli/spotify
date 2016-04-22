@@ -108,7 +108,7 @@ function compileJs() {
           runtime: false
         });
       }).then(() => {
-        return gulp.src(`${jsDir}/app.js`)
+        gulp.src(`${jsDir}/app.js`)
           .pipe(rev())
           .pipe(gulp.dest(jsDir))
           .on('end', () => {

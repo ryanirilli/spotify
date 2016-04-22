@@ -5,7 +5,7 @@ module.exports = (isDebugMode) => {
     frameworks: ['jspm', 'mocha', 'chai-sinon'],
     jspm: {
       loadFiles: ['test/**/*.+(js|jsx)'],
-      serveFiles: ['src/**/*.+(js|jsx)', 'images/**/*', 'clients/**/*']
+      serveFiles: ['src/**/*.+(js|jsx)']
     },
     keepAlive: true,
     babelPreprocessor: {
