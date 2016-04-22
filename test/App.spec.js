@@ -2,8 +2,12 @@ import React from 'react';
 import { renderIntoDocument, Simulate, scryRenderedDOMComponentsWithClass, findRenderedDOMComponentWithClass } from 'react-addons-test-utils';
 import { App } from './../src/components/App.jsx!'
 
-function createComponent(props) {
-  return renderIntoDocument( <App />);
+const noop = () => {};
+
+function createComponent(props = {}) {
+  return renderIntoDocument( <App
+    updateSampleProperty={props.updateSampleProperty || noop}
+  />);
 }
 
 context('App', () => {
