@@ -1,6 +1,7 @@
 {
   "jspm": {
     "dependencies": {
+      "immutable": "npm:immutable@^3.8.1",
       "jsx": "github:floatdrop/plugin-jsx@^1.2.1",
       "react": "npm:react@^15.0.1",
       "react-addons-test-utils": "npm:react-addons-test-utils@^15.0.1",
@@ -18,12 +19,13 @@
     }
   },
   "dependencies": {
+    "jspm": "0.16.32",
     "gulp": "^3.9.1",
     "gulp-compile-handlebars": "^0.6.1",
     "gulp-rename": "^1.2.2",
     "gulp-rev": "^7.0.0",
     "gulp-sass": "^2.2.0",
-    "systemjs-builder": "^0.15.15",
+    "systemjs-builder": "0.14.11",
     "yargs": "^4.6.0"
   },
   "devDependencies": {

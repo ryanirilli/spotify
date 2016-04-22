@@ -1,5 +1,4 @@
 System.config({
-  baseUrl: './',
   defaultJSExtensions: true,
   transpiler: "babel",
   babelOptions: {
@@ -12,11 +11,13 @@ System.config({
     "github:*": "jspm_packages/github/*",
     "npm:*": "jspm_packages/npm/*"
   },
+  baseUrl: "./",
 
   map: {
     "babel": "npm:babel-core@5.8.38",
     "babel-runtime": "npm:babel-runtime@5.8.38",
     "core-js": "npm:core-js@1.2.6",
+    "immutable": "npm:immutable@3.8.1",
     "jsx": "github:floatdrop/plugin-jsx@1.2.1",
     "react": "npm:react@15.0.1",
     "react-addons-test-utils": "npm:react-addons-test-utils@15.0.1",
