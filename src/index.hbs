@@ -13,8 +13,8 @@
         {{#if isProdBuild}}
         <script src="/static/js/{{appJs}}"></script>
         {{else}}
-        <script src="../jspm_packages/system.js"></script>
-        <script src="../config.js"></script>
+        <script src="/jspm_packages/system.js"></script>
+        <script src="/config.js"></script>
         <script>
             System.import('index');
         </script>

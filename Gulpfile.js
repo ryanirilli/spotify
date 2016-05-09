@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 /************************************
  * Configure build directory structure
  ************************************/
@@ -8,24 +8,27 @@ const staticAssetsDir = `${buildDir}/static`;
 const cssDir          = `${staticAssetsDir}/css`;
 const jsDir           = `${staticAssetsDir}/js`;
 const imgDir          = `${staticAssetsDir}/img`;
+const devServerPort   = 8080;
 
 /************************************
  * Require Libs
  ************************************/
 
-const gulp        = require('gulp');
-const connect     = require('gulp-connect');
-const handlebars  = require('gulp-compile-handlebars');
-const rename      = require("gulp-rename");
-const sass        = require('gulp-sass');
-const exec        = require('child_process').execSync;
-const Builder     = require('systemjs-builder');
-const rev         = require('gulp-rev');
-const readdirSync = require('fs').readdirSync;
-const argv        = require('yargs').argv;
-const path        = require('path');
-const KarmaServer = require('karma').Server;
-const karmaConfig = require('./karma.conf.js');
+const gulp             = require('gulp');
+const connect          = require('gulp-connect');
+const proxyMiddleware  = require('http-proxy-middleware');
+const handlebars       = require('gulp-compile-handlebars');
+const rename           = require("gulp-rename");
+const sass             = require('gulp-sass');
+const sassJspm         = require('sass-jspm-importer');
+const exec             = require('child_process').execSync;
+const Builder          = require('systemjs-builder');
+const rev              = require('gulp-rev');
+const readdirSync      = require('fs').readdirSync;
+const argv             = require('yargs').argv;
+const path             = require('path');
+const KarmaServer      = require('karma').Server;
+const karmaConfig      = require('./karma.conf.js');
 
 /************************************
  * Build Tasks
@@ -40,7 +43,8 @@ gulp.task('logTasks', () => {
     console.log('gulp serve           serves your app locally');
     console.log('gulp serve --prod    serves the production build of your app locally');
     console.log('gulp build           bundles your app for production');
-    console.log('gulp test            runs your tests');
+    console.log('gulp test            runs your tests using Phantomjs');
+    console.log('gulp test --debug    runs your tests using Chrome');
     console.log();
   });
 });
@@ -84,7 +88,10 @@ function compileAssets() {
 function compileSass() {
   return new Promise(resolve => {
     const stream = gulp.src('src/styles/app.scss')
-    .pipe(sass({outputStyle: 'compressed'}));
+    .pipe(sass({
+      outputStyle: 'compressed',
+      importer: sassJspm.importer
+    }));
 
     if(isProdBuild) {
      stream.pipe(rev());
@@ -150,16 +157,26 @@ function render() {
 }
 
 function startServer() {
+
+  const getProxy = () => {
+    return proxyMiddleware([
+      '/api/endpoint/**/*',
+      '/some/other/endpoint/**/*'], {target: 'http://your-api-url'});
+  };
+
   const opts = {
-    root: './dist',
+    root: `./${buildDir}`,
+    fallback: `./${buildDir}/index.html`,
+    port: devServerPort,
     middleware(connect) {
       return [
         connect().use('/index.js',          connect.static('./src/index.js')),
         connect().use('/config.js',         connect.static('./config.js')),
         connect().use('/jspm_packages',     connect.static('./jspm_packages')),
-        connect().use('/static/img',        connect.static('./images')),
+        connect().use('/static/img',        connect.static('./img')),
         connect().use('/static/fonts',      connect.static('./fonts')),
-        connect().use('/src',               connect.static('./src'))
+        connect().use('/src',               connect.static('./src')),
+        connect().use(getProxy())
       ];
     }
   };
@@ -180,7 +197,7 @@ function watch() {
       });
   });
 
-  gulp.watch('./src/**/*', () => {
+  gulp.watch(['./src/**/*', './src/**/*.jsx', './img/**/*'], () => {
     gulp.src('./src/index.js')
       .pipe(connect.reload());
   });

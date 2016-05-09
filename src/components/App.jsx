@@ -7,13 +7,12 @@ import { updateSampleProperty } from 'src/action-creators/app-action-creators.js
 export const App = React.createClass({
 
   componentDidMount() {
-    this.props.updateSampleProperty('see, it\'s that easy');
+    this.props.updateSampleProperty('Get started');
   },
 
   render() {
-    return <div>
-      <h1 ref="siteTitle">Appocalypse</h1>
-      <p>{this.props.sampleProperty}</p>
+    return <div className="app-container">
+      <img ref="unsulliedLogo" alt="unsullied logo" className="unsullied-logo" src="/static/img/unsullied.svg" />
     </div>
   }
 });

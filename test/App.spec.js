@@ -11,9 +11,9 @@ function createComponent(props = {}) {
 }
 
 context('App', () => {
-  it('should have a title', () => {
+  it('should have a unsullied logo img with an alt attribute', () => {
     const AppComponent = createComponent();
-    const title = AppComponent.refs.siteTitle.textContent;
-    expect(title).to.equal('Appocalypse');
+    const altTagValue = AppComponent.refs.unsulliedLogo.getAttribute('alt');
+    expect(altTagValue).to.equal('unsullied logo');
   })
 });
