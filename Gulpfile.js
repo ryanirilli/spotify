@@ -70,6 +70,10 @@ gulp.task('test',  () => {
   new KarmaServer(karmaConfig(argv.debug)).start();
 });
 
+/************************************
+ * Build Functions
+ ************************************/
+
 function clean() {
   return new Promise(resolve => {
     exec(`rm -rf ${buildDir}`);
@@ -176,7 +180,7 @@ function startServer() {
    */
   const apiProxy = () => {
     return proxyMiddleware([
-      '/api/endpoint/**/*',
+      '/api/v1/**/*',
       '/some/other/endpoint/**/*'], {target: 'http://your-api-url'});
   };
 
