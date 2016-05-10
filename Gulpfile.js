@@ -8,6 +8,7 @@ const staticAssetsDir = `${buildDir}/static`;
 const cssDir          = `${staticAssetsDir}/css`;
 const jsDir           = `${staticAssetsDir}/js`;
 const imgDir          = `${staticAssetsDir}/img`;
+const fontsDir        = `${staticAssetsDir}/fonts`;
 const devServerPort   = 8080;
 
 /************************************
@@ -80,7 +81,9 @@ function compileAssets() {
   const promises = [];
   promises.push(compileSass());
   if(isProdBuild) {
-    promises.push(compileJs().then(copyImages));
+    promises.push(compileJs()
+        .then(copyImages)
+        .then(copyFonts));
   }
   return Promise.all(promises);
 }
@@ -135,6 +138,14 @@ function copyImages() {
   });
 }
 
+function copyFonts() {
+  return new Promise(resolve => {
+    gulp.src('./fonts/**/*')
+      .pipe(gulp.dest(fontsDir))
+      .on('end', resolve);
+  });
+}
+
 function render() {
   return new Promise(resolve => {
     const data = {
@@ -158,7 +169,12 @@ function render() {
 
 function startServer() {
 
-  const getProxy = () => {
+  /**
+   * Add your api endpoints here so your development server
+   * knows to make the requests to the api server instead of
+   * responding with index.html
+   */
+  const apiProxy = () => {
     return proxyMiddleware([
       '/api/endpoint/**/*',
       '/some/other/endpoint/**/*'], {target: 'http://your-api-url'});
@@ -176,7 +192,7 @@ function startServer() {
         connect().use('/static/img',        connect.static('./img')),
         connect().use('/static/fonts',      connect.static('./fonts')),
         connect().use('/src',               connect.static('./src')),
-        connect().use(getProxy())
+        connect().use(apiProxy())
       ];
     }
   };
@@ -197,7 +213,12 @@ function watch() {
       });
   });
 
-  gulp.watch(['./src/**/*', './src/**/*.jsx', './img/**/*'], () => {
+  gulp.watch([
+    './src/**/*',
+    './src/**/*.jsx',
+    './img/**/*',
+    './fonts/**/*'
+  ], () => {
     gulp.src('./src/index.js')
       .pipe(connect.reload());
   });

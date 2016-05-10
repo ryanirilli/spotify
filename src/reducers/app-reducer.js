@@ -1,7 +1,7 @@
 import { fromJS } from 'immutable';
 
 const initialState = fromJS({
-  sampleProperty: 'sample'
+  sampleProperty: 'sample value'
 });
 
 export default function(state = initialState, action = {}) {

@@ -12,7 +12,10 @@ export const App = React.createClass({
 
   render() {
     return <div className="app-container">
-      <img ref="unsulliedLogo" alt="unsullied logo" className="unsullied-logo" src="/static/img/unsullied.svg" />
+      <img ref="unsulliedLogo" 
+           alt="unsullied logo" 
+           className="unsullied-logo" 
+           src="/static/img/unsullied-logo.svg" />
     </div>
   }
 });
