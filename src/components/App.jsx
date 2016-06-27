@@ -2,14 +2,8 @@ import React from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
-import { updateSampleProperty } from 'src/action-creators/app-action-creators.js';
 
 export const App = React.createClass({
-
-  componentDidMount() {
-    this.props.updateSampleProperty('Get started');
-  },
-
   render() {
     return <div className="app-container">
       <img ref="unsulliedLogo" 
@@ -21,15 +15,11 @@ export const App = React.createClass({
 });
 
 function mapStateToProps(state) {
-  return {
-    sampleProperty: state.app.get('sampleProperty')
-  };
+  return {};
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({
-    updateSampleProperty
-  }, dispatch);
+  return bindActionCreators({}, dispatch);
 }
 
 export const AppContainer = connect(mapStateToProps, mapDispatchToProps)(App);

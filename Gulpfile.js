@@ -94,14 +94,15 @@ function compileAssets() {
 
 function compileSass() {
   return new Promise(resolve => {
-    const stream = gulp.src('src/styles/app.scss')
-    .pipe(sass({
+    let stream = gulp.src('src/styles/app.scss');
+
+    stream = stream.pipe(sass({
       outputStyle: 'compressed',
       importer: sassJspm.importer
     }));
 
     if(isProdBuild) {
-     stream.pipe(rev());
+      stream = stream.pipe(rev());
     }
 
     stream.pipe(gulp.dest(cssDir))
@@ -190,12 +191,12 @@ function startServer() {
     port: devServerPort,
     middleware(connect) {
       return [
-        connect().use('/index.js',          connect.static('./src/index.js')),
-        connect().use('/config.js',         connect.static('./config.js')),
-        connect().use('/jspm_packages',     connect.static('./jspm_packages')),
-        connect().use('/static/img',        connect.static('./img')),
-        connect().use('/static/fonts',      connect.static('./fonts')),
-        connect().use('/src',               connect.static('./src')),
+        connect().use('/index.js',      connect.static('./src/index.js')),
+        connect().use('/config.js',     connect.static('./config.js')),
+        connect().use('/jspm_packages', connect.static('./jspm_packages')),
+        connect().use('/static/img',    connect.static('./img')),
+        connect().use('/static/fonts',  connect.static('./fonts')),
+        connect().use('/src',           connect.static('./src')),
         connect().use(apiProxy())
       ];
     }
