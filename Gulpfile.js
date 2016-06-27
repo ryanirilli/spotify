@@ -94,19 +94,19 @@ function compileAssets() {
 
 function compileSass() {
   return new Promise(resolve => {
-    let stream = gulp.src('src/styles/app.scss');
-
-    stream = stream.pipe(sass({
-      outputStyle: 'compressed',
-      importer: sassJspm.importer
-    }));
+    const stream = gulp.src('src/styles/app.scss')
+      .pipe(sass({
+        errLogToConsole: true,
+        outputStyle: 'compressed',
+        importer: sassJspm.importer
+      }));
 
     if(isProdBuild) {
-      stream = stream.pipe(rev());
+      stream.pipe(rev());
     }
 
     stream.pipe(gulp.dest(cssDir))
-    .on('end', resolve);
+      .on('end', resolve);
   });
 }
 
@@ -210,12 +210,10 @@ function startServer() {
 }
 
 function watch() {
-  gulp.watch('./src/styles/**/*.scss', () => {
-    compileSass()
-      .then(() => {
-        gulp.src(`${buildDir}/**/*.css`)
-          .pipe(connect.reload());
-      });
+  const cssBuildPath = `${buildDir}/**/*.css`;
+  gulp.watch('./src/styles/**/*.scss', compileSass);
+  gulp.watch(cssBuildPath, () => {
+    gulp.src(cssBuildPath).pipe(connect.reload());
   });
 
   gulp.watch([
