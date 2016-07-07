@@ -1,21 +1,21 @@
 'use strict';
-const utils = require('./utils/utils');
-const express = require('express');
-const request = require('request');
-const querystring = require('querystring');
-const bodyParser = require('body-parser');
+const utils        = require('./utils/utils');
+const express      = require('express');
+const request      = require('request');
+const querystring  = require('querystring');
+const bodyParser   = require('body-parser');
 const cookieParser = require('cookie-parser');
-const app = express();
-const port = 8888;
 
+const port          = 8888;
+const stateKey      = 'spotify_auth_state';
+const redirect_uri  = `http://localhost:${port}/callback`;
+const client_id     = process.env.SPOTIFY_CLIENT_ID;
+const client_secret = process.env.SPOTIFY_CLIENT_SECRET;
+
+const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
-
-const stateKey = 'spotify_auth_state';
-const client_id = process.env.SPOTIFY_CLIENT_ID;
-const client_secret = process.env.SPOTIFY_CLIENT_SECRET;
-const redirect_uri = `http://localhost:${port}/callback`;
 
 app.get('/access-token', (req, res) => {
   const authOptions = {
