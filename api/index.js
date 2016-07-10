@@ -17,7 +17,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-app.get('/access-token', (req, res) => {
+app.get('/api/v1/spotify-access-token', (req, res) => {
   const authOptions = {
     url: 'https://accounts.spotify.com/api/token',
     headers: { 'Authorization': 'Basic ' + (new Buffer(`${client_id}:${client_secret}`).toString('base64')) },
@@ -25,7 +25,7 @@ app.get('/access-token', (req, res) => {
     json: true
   };
 
-  request.post(authOptions, function(error, response, body) {
+  request.post(authOptions, (error, response, body) => {
     if (!error && response.statusCode === 200) {
       const token = body.access_token;
       res.status(200).send(JSON.stringify({ token }));
@@ -35,7 +35,7 @@ app.get('/access-token', (req, res) => {
   });
 });
 
-app.get('/login', (req, res) => {
+app.get('/api/v1/spotify-login', (req, res) => {
   const state = utils.generateRandomString(16);
   const scope = 'user-read-private user-read-email';
   const params = querystring.stringify({ 
@@ -46,7 +46,7 @@ app.get('/login', (req, res) => {
   res.redirect(`https://accounts.spotify.com/authorize?${params}`);
 });
 
-app.get('/callback', (req, res) => {
+app.get('/api/v1/spotify-callback', (req, res) => {
 
   const code = req.query.code || null;
   const state = req.query.state || null;

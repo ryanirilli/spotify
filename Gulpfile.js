@@ -180,9 +180,7 @@ function startServer() {
    * responding with index.html
    */
   const apiProxy = () => {
-    return proxyMiddleware([
-      '/api/v1/**/*',
-      '/some/other/endpoint/**/*'], {target: 'http://your-api-url'});
+    return proxyMiddleware(['/api/v1/**/*'], {target: 'http://localhost:8888'});
   };
 
   const opts = {

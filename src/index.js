@@ -5,17 +5,13 @@ import { Provider, connect } from 'react-redux';
 import { Router, Route, browserHistory } from 'react-router';
 import { syncHistoryWithStore, routerReducer } from 'react-router-redux'
 import thunk from 'redux-thunk';
+import 'whatwg-fetch';
 
 import { AppContainer } from 'src/components/App.jsx!';
-import appReducer from 'src/reducers/app-reducer.js';
+import spotify from 'src/reducers/spotify';
 
-const store = createStore(
-  combineReducers({
-    routing: routerReducer,
-    app: appReducer
-  }), applyMiddleware(thunk)
-);
-
+const reducers = { routing: routerReducer, spotify };
+const store = createStore(combineReducers(reducers), applyMiddleware(thunk));
 const history = syncHistoryWithStore(browserHistory, store);
 
 ReactDOM.render(
