@@ -1,0 +1,6 @@
+@for $i from 1 through 40 {
+  $val: $i*25;
+  .u-#{$val}px {
+    width: #{$val}px;
+  }
+}

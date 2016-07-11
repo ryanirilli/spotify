@@ -11,4 +11,8 @@ export function getRecs(params) {
   return request(`${baseUrl}/recommendations?${queryString.stringify(params)}`);
 }
 
-export default { getAccessToken, getRecs }
+export function search(params) {
+  return request(`${baseUrl}/search?${queryString.stringify(params)}`);
+}
+
+export default { getAccessToken, getRecs, search }

@@ -1,18 +1,26 @@
 import Spotify from './../api/spotify';
 import { setLocalStorageItem } from './../api/httpUtils';
 
-export function isAuthenticated(isAuthenticated) {
+export function setIsAuthenticated(isAuthenticated) {
   return {
-    type: 'IS_AUTHENTICATED',
+    type: 'SET_IS_AUTHENTICATED',
     isAuthenticated
   }
 }
 
-export function setSpotifyData(spotifyData) {
+export function setSpotifyRecs(recs) {
   return {
-    type: 'SET_SPOTIFY_DATA',
-    spotifyData
+    type: 'SET_SPOTIFY_RECS',
+    recs
   }
+}
+
+export function setSpotifySearchResults(spotifySearchResults) {
+  return {
+    type: 'SET_SPOTIFY_SEARCH_RESULTS',
+    spotifySearchResults
+  }
+  
 }
 
 export function getAccessToken() {
@@ -20,7 +28,16 @@ export function getAccessToken() {
     Spotify.getAccessToken()
       .then(payload => {
         setLocalStorageItem('accessToken', payload.json.token);
-        dispatch(isAuthenticated(true));
+        dispatch(setIsAuthenticated(true));
+      });
+  }
+}
+
+export function search(artist) {
+  return dispatch => {
+    Spotify.search({q: encodeURIComponent(artist), type: 'artist'})
+      .then(payload => {
+        dispatch(setSpotifySearchResults(payload.json.artists.items));
       });
   }
 }
@@ -28,8 +45,8 @@ export function getAccessToken() {
 export function getRecs(params) {
   return dispatch => {
     Spotify.getRecs(params)
-      .then(payload => dispatch(setSpotifyData(payload.json)));
+      .then(payload => dispatch(setSpotifyRecs(payload.json)));
   }
 }
 
-export default { getAccessToken, getRecs }
+export default { getAccessToken, getRecs, search }

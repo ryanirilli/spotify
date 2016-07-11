@@ -1,0 +1,19 @@
+.ib {
+  display: inline-block;
+}
+
+.float-right {
+  float: right;
+}
+
+.rotate-vertical-palm {
+  @include media-query(palm) {
+    @include vendor(transform, rotateZ(90deg));
+  }
+}
+
+@for $i from 0 through 10 {
+  .opacity-#{$i} {
+    opacity: $i/10;
+  }
+}
