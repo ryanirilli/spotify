@@ -7,6 +7,8 @@ import Spotify from './../action-creators/spotify';
 import RangeSlider from './RangeSlider.jsx!';
 import Typeahead from './Typeahead.jsx!';
 
+import { List, Map } from 'immutable';
+
 function mapStateToProps(state) {
   return {
     isSpotifyAuthenticated: state.spotify.get('isAuthenticated'),
@@ -19,7 +21,8 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({
     getSpotifyAccessToken: Spotify.getAccessToken,
     getSpotfyRecs: Spotify.getRecs,
-    spotifySearch: Spotify.search
+    spotifySearch: Spotify.search,
+    resetSpotifySearch: Spotify.resetSearch
   }, dispatch);
 }
 
@@ -36,6 +39,7 @@ const sliders = [
 ];
 
 export const App = React.createClass({
+
   componentWillMount() {
     this.props.getSpotifyAccessToken();
   },
@@ -44,35 +48,67 @@ export const App = React.createClass({
     const sliderValues = {};
     sliders.forEach(slider => sliderValues[`target_${slider}`] = 0);
     return {
-      targets: Object.assign({}, sliderValues)
+      targets: Object.assign({}, sliderValues),
+      searchResultsAnimation: []
     };
-
   },
 
   render() {
-    return <div className="app-container">
-      {this.props.isSpotifyAuthenticated ? this.renderInitialView() : null}
-    </div>
-  },
+    if(!this.props.isSpotifyAuthenticated) {
+      return null;
+    }
 
-  renderInitialView() {
-    return <div className="section-main">
-      <div className="layout">
-        <div className="section__sidebar layout__item u-1/3">
-          {this.renderSearch()}
-          {this.renderSliders()}
-        </div>
-        <div className="section__body layout__item u-2/3">
-          <h1>body</h1>
+    return <div className="app-container">
+      <div className="section-main palm-ph-">
+        <div className="layout">
+          <div className="layout__item u-1/3 u-1/1-palm">
+            <div>
+              {this.renderSearch()}
+            </div>
+            {/* this.renderSliders() */}
+          </div>
+          <div className="layout__item u-2/3 u-1/1-palm">
+            <h1>body</h1>
+          </div>
         </div>
       </div>
     </div>
   },
-  
+
   renderSearch() {
-    return <div className="search">
-      <Typeahead fetchData={this.searchSpotifyArtist} results={this.props.spotifySearchResults} />
+    return <div className="search u-pt palm-pt-">
+      <Typeahead fetchData={this.searchSpotifyArtist}
+                 results={this.props.spotifySearchResults}
+                 renderResult={this.renderSpotifySearchResult} />
     </div>
+  },
+
+  renderSpotifySearchResult(result, i) {
+    const images = result.get('images') || List();
+    const thumb = images.last() || Map();
+    return <div className={`slide-down-${i}`} onClick={() => this.handleArtistSelect(result)}>
+      <div className="media media--small u-mv--">
+        {this.renderSpotifySearchResultImg(thumb.get('url'))}
+        <div className="media__body">
+          <p className="u-mt0">
+            {result.get('name')}
+          </p>
+        </div>
+      </div>
+    </div>
+  },
+
+  renderSpotifySearchResultImg(url) {
+    const commonClasses = "media__img u-50px";
+    const style = {
+      background: 'rgba(255, 255, 255, 0.1)',
+      height: '50px'
+    };
+    if(url) {
+      return <img src={url} className={commonClasses} />
+    } else {
+      return <div className={commonClasses} style={style} />
+    }
   },
 
   renderSliders() {
@@ -102,6 +138,7 @@ export const App = React.createClass({
       seed_genres: 'hip+hop',
       seed_artists: '4NHQUGzhtTLFvgF5SZesLK'
     };
+
     sliders.forEach(slider => {
       const key = `target_${slider}`;
       const val = this.state.targets[key];
@@ -113,8 +150,17 @@ export const App = React.createClass({
   },
 
   searchSpotifyArtist(val) {
-    this.props.spotifySearch(val);
+    if(val) {
+      this.props.spotifySearch(val);  
+    } else {
+      this.props.resetSpotifySearch();
+    }
+  },
+
+  handleArtistSelect(result) {
+    console.log(result.toJSON());
   }
+
 });
 
 export const AppContainer = connect(mapStateToProps, mapDispatchToProps)(App);

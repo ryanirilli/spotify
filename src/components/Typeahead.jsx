@@ -1,35 +1,43 @@
 import React from 'react';
+import { List } from 'immutable';
 import { debounce } from './../utils/utils';
-let test = 0;
+
 export default React.createClass({
+
+  getDefaultProps() {
+    return {
+      results: List(),
+      renderResult: function() {}
+    }
+  },
 
   getInitialState() {
     return {
       input: '',
-      fetchData: debounce(this.fetchData, 500)
+      fetchData: debounce(this.fetchData, 250)
     }
   },
 
   render() {
-    return <div className="typeahead">
-      <input className="u-1/1"
+    return <div className={`typeahead typeahead--${this.props.theme || 'main'} ${this.props.results.size ? 'typeahead--has-results' : ''}`}>
+      <input className="typeahead__input u-1/1"
              type="text"
              value={this.state.input}
              onChange={this.handleInput} />
-      <div className="typeahead__results">
-        <ul>
-          {this.props.results.map(result => {
-            return <li>{this.renderResult(result)}</li>
-          })}
-        </ul>
-      </div>
+      {this.props.results.size ? this.renderResults() : null}
     </div>
   },
-
-  renderResult(result) {
-    return <div key={result.get('id')}>
-      {result.get('name')}
-    </div>
+  
+  renderResults() {
+    return <ul className="typeahead__results list-bare">
+      {this.props.results.map((result, i) => this.renderResult(result, i))}
+    </ul>
+  },
+  
+  renderResult(result, i) {
+    return <li key={result.get('id')} className="typeahead__result">
+      {this.props.renderResult(result, i)}
+    </li>
   },
 
   fetchData() {

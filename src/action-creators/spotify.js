@@ -8,6 +8,12 @@ export function setIsAuthenticated(isAuthenticated) {
   }
 }
 
+export function resetSearch() {
+  return {
+    type: 'RESET_SPOTIFY_SEARCH'
+  }
+}
+
 export function setSpotifyRecs(recs) {
   return {
     type: 'SET_SPOTIFY_RECS',
@@ -35,7 +41,7 @@ export function getAccessToken() {
 
 export function search(artist) {
   return dispatch => {
-    Spotify.search({q: encodeURIComponent(artist), type: 'artist'})
+    Spotify.search({q: artist, type: 'artist'})
       .then(payload => {
         dispatch(setSpotifySearchResults(payload.json.artists.items));
       });
@@ -49,4 +55,4 @@ export function getRecs(params) {
   }
 }
 
-export default { getAccessToken, getRecs, search }
+export default { getAccessToken, getRecs, search, resetSearch }

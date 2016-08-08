@@ -1,6 +1,7 @@
 @import "01-settings.inuit-buttons";
 @import "01-settings.inuit-spacing";
 @import "01-settings.inuit-layout";
+@import "01-settings.inuit-media";
 
 @import "jspm:inuit-defaults/settings.defaults";
 @import "jspm:inuit-responsive-settings/settings.responsive";
@@ -16,12 +17,16 @@
 
 @import 'jspm:inuit-buttons/objects.buttons';
 @import 'jspm:inuit-layout/objects.layout';
+@import 'jspm:inuit-list-bare/objects.list-bare';
+@import 'jspm:inuit-media/objects.media';
 
 @import "jspm:inuit-spacing/_trumps.spacing";
 @import "jspm:inuit-responsive-spacing/_trumps.spacing-responsive";
 @import "jspm:inuit-widths/trumps.widths";
 @import "jspm:inuit-responsive-widths/trumps.widths-responsive";
+@import "jspm:inuit-clearfix/trumps.clearfix";
 
+@import "05-objects.animations";
 @import "05-objects.sections";
 
 @import "06-components.range-slider";

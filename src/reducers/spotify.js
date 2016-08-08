@@ -15,6 +15,8 @@ export default function(state = initialState, action = {}) {
       return state.set('data', fromJS(action.recs));
     case 'SET_SPOTIFY_SEARCH_RESULTS':
       return state.set('searchResults', fromJS(action.spotifySearchResults));
+    case 'RESET_SPOTIFY_SEARCH':
+      return state.set('searchResults', initialState.get('searchResults'));
     default:
       return state;
   }

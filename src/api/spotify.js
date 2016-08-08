@@ -11,7 +11,8 @@ export function getRecs(params) {
   return request(`${baseUrl}/recommendations?${queryString.stringify(params)}`);
 }
 
-export function search(params) {
+export function search(opts) {
+  const params = Object.assign({}, {}, opts);
   return request(`${baseUrl}/search?${queryString.stringify(params)}`);
 }
 

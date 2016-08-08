@@ -1,0 +1,22 @@
+@for $i from 1 through 100 {
+  .slide-down-#{$i} {
+    position: relative;
+    opacity: 0;
+    transform-origin: top left;
+    @include animation('slide-down 300ms #{$i*30}ms ease forwards');
+  }
+}
+
+@include keyframes(slide-down) {
+  0% {
+    top: -50px;
+    opacity: 0;
+    @include vendor(transform, rotate3d(1,0,0,-90deg));
+  }
+
+  100% {
+    top: 0;
+    opacity: 1;
+    @include vendor(transform, rotate3d(1,0,0,0deg));
+  }
+}
