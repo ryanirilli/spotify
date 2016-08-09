@@ -7,7 +7,8 @@ export default React.createClass({
   getDefaultProps() {
     return {
       results: List(),
-      renderResult: function() {}
+      renderResult: function() {},
+      onSelect: function() {}
     }
   },
 
@@ -20,59 +21,16 @@ export default React.createClass({
     }
   },
 
-  onKeydown(event) {
-    const { keyCode } = event;
-    switch(keyCode) {
-      case 27:
-        //esc
-        this.setState({ isShowingResults: false, curActiveIndex: null });
-        break;
-      case 38:
-        //arrow up
-        this.setCurrentActiveIndex('up');
-        break;
-      case 40:
-        //arrow down
-        this.setCurrentActiveIndex('down');
-        break;
-    }
-  },
-
-  setCurrentActiveIndex(direction) {
-    const { results } = this.props;
-    let { curActiveIndex } = this.state;
-
-    if(!results.size) {
-      return;
-    }
-
-    if (curActiveIndex === null || (curActiveIndex === 0 && direction === 'up')) {
-      curActiveIndex = 0;
-    } else if(curActiveIndex !== results.size - 1) {
-      switch (direction) {
-        case 'up':
-          curActiveIndex--;
-          break;
-        case 'down':
-          curActiveIndex++;
-          break;
-      }
-    }
-    this.setState({ curActiveIndex });
-  },
-
-  setCurrentActiveIndexOnHover(index) {
-    this.setState({ curActiveIndex: index });
-  },
-
   render() {
     const shouldShowResults = this.props.results.size && this.state.isShowingResults;
-    return <div ref="typeahead" className={`typeahead typeahead--${this.props.theme || 'main'} ${shouldShowResults ? 'typeahead--has-results' : ''}`}
+    return <div ref="typeahead"
+                className={`typeahead typeahead--${this.props.theme || 'main'} ${shouldShowResults ? 'typeahead--has-results' : ''}`}
                 onKeyDown={this.onKeydown}>
       <input className="typeahead__input u-1/1"
              type="text"
              value={this.state.input}
-             onChange={this.handleInput} />
+             onChange={this.handleInput}
+             onClick={this.showResults} />
       {shouldShowResults ? this.renderResults() : null}
     </div>
   },
@@ -87,14 +45,23 @@ export default React.createClass({
     const { curActiveIndex } = this.state;
     return <li key={result.get('id')}
                onMouseEnter={() => this.setCurrentActiveIndexOnHover(i)}
+               onClick={this.setSelection}
                className={`typeahead__result ${curActiveIndex === i ? 'typeahead__result--active' : ''}`}>
       {this.props.renderResult(result, i)}
     </li>
   },
 
+  showResults() {
+    this.setState({ isShowingResults: true });
+  },
+
+  hideResults() {
+    this.setState({ isShowingResults: false, curActiveIndex: null });
+  },
+
   fetchData() {
     const { input } = this.state;
-    this.setState({ isShowingResults: true, curActiveIndex: null });
+    this.showResults();
     this.props.fetchData(input);
   },
 
@@ -102,5 +69,50 @@ export default React.createClass({
     const { value } = input.target;
     this.setState({ input: value });
     this.state.fetchData(value);
+  },
+
+  onKeydown(event) {
+    const { keyCode } = event;
+    switch(keyCode) {
+      case 27: //esc
+        this.hideResults();
+        break;
+      case 38: //arrow up
+        this.setCurrentActiveIndex('up');
+        break;
+      case 40: //arrow down
+        this.setCurrentActiveIndex('down');
+        break;
+      case 13: //Enter
+        this.setSelection();
+        break;
+    }
+  },
+
+  setSelection() {
+    const result = this.props.results.get(this.state.curActiveIndex);
+    if(result) {
+      this.hideResults();
+      this.props.onSelect(result);
+    }
+  },
+
+  setCurrentActiveIndex(direction) {
+    const { results } = this.props;
+    if(!results.size) {
+      return;
+    }
+    this.showResults();
+    let { curActiveIndex } = this.state;
+    if (curActiveIndex === null || (curActiveIndex === 0 && direction === 'up')) {
+      curActiveIndex = 0;
+    } else if (curActiveIndex !== results.size - 1) {
+      curActiveIndex = direction === 'up' ? curActiveIndex-1 : curActiveIndex+1;
+    }
+    this.setState({ curActiveIndex });
+  },
+
+  setCurrentActiveIndexOnHover(index) {
+    this.setState({ curActiveIndex: index });
   }
 });

@@ -79,15 +79,16 @@ export const App = React.createClass({
     return <div className="search u-pt palm-pt-">
       <Typeahead fetchData={this.searchSpotifyArtist}
                  results={this.props.spotifySearchResults}
-                 renderResult={this.renderSpotifySearchResult} />
+                 renderResult={this.renderSpotifySearchResult} 
+                 onSelect={this.handleArtistSelect} />
     </div>
   },
 
   renderSpotifySearchResult(result, i) {
     const images = result.get('images') || List();
     const thumb = images.last() || Map();
-    return <div className={`slide-down-${i}`} onClick={() => this.handleArtistSelect(result)}>
-      <div className="media media--small u-mv--">
+    return <div className={`slide-down-${i}`}>
+      <div className="media media--small u-mv-- u-pl--">
         {this.renderSpotifySearchResultImg(thumb.get('url'))}
         <div className="media__body">
           <p className="u-mt0">
