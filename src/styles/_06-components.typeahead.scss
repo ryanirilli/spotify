@@ -37,7 +37,7 @@ $typeahead-border-radius: 4px;
 
   .typeahead__result {
     padding: 3px;
-    &:hover {
+    &.typeahead__result--active {
       background: rgba(white, 0.1);
       cursor: pointer;
     }
