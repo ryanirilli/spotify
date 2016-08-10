@@ -7,6 +7,7 @@ export default React.createClass({
   getDefaultProps() {
     return {
       results: List(),
+      fetchData: function() {},
       renderResult: function() {},
       onSelect: function() {}
     }
@@ -27,6 +28,7 @@ export default React.createClass({
                 className={`typeahead typeahead--${this.props.theme || 'main'} ${shouldShowResults ? 'typeahead--has-results' : ''}`}
                 onKeyDown={this.onKeydown}>
       <input className="typeahead__input u-1/1"
+             placeholder={this.props.placeholder}
              type="text"
              value={this.state.input}
              onChange={this.handleInput}
@@ -36,9 +38,9 @@ export default React.createClass({
   },
   
   renderResults() {
-    return <ul className="typeahead__results list-bare">
+    return [this.renderCloseMask(), <ul key="typeaheadResults" className="typeahead__results list-bare">
       {this.props.results.map((result, i) => this.renderResult(result, i))}
-    </ul>
+    </ul>]
   },
   
   renderResult(result, i) {
@@ -49,6 +51,10 @@ export default React.createClass({
                className={`typeahead__result ${curActiveIndex === i ? 'typeahead__result--active' : ''}`}>
       {this.props.renderResult(result, i)}
     </li>
+  },
+
+  renderCloseMask() {
+    return <div key="typeaheadCloseMask" className="typeahead__close-mask" onClick={this.hideResults} />
   },
 
   showResults() {
@@ -90,9 +96,13 @@ export default React.createClass({
   },
 
   setSelection() {
+    const { selectedValueLabel } = this.props;
     const result = this.props.results.get(this.state.curActiveIndex);
     if(result) {
       this.hideResults();
+      if(selectedValueLabel) {
+        this.setState({input: result.get(selectedValueLabel)});
+      }
       this.props.onSelect(result);
     }
   },

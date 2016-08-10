@@ -13,7 +13,8 @@ function mapStateToProps(state) {
   return {
     isSpotifyAuthenticated: state.spotify.get('isAuthenticated'),
     spotifyRecs: state.spotify.get('recs'),
-    spotifySearchResults: state.spotify.get('searchResults')
+    spotifySearchResults: state.spotify.get('searchResults'),
+    spotifySelectedArtist: state.spotify.get('artist')
   };
 }
 
@@ -22,7 +23,8 @@ function mapDispatchToProps(dispatch) {
     getSpotifyAccessToken: Spotify.getAccessToken,
     getSpotfyRecs: Spotify.getRecs,
     spotifySearch: Spotify.search,
-    resetSpotifySearch: Spotify.resetSearch
+    resetSpotifySearch: Spotify.resetSearch,
+    setSpotifyArtist: Spotify.setArtist
   }, dispatch);
 }
 
@@ -61,14 +63,9 @@ export const App = React.createClass({
     return <div className="app-container">
       <div className="section-main palm-ph-">
         <div className="layout">
-          <div className="layout__item u-1/3 u-1/1-palm">
-            <div>
-              {this.renderSearch()}
-            </div>
-            {/* this.renderSliders() */}
-          </div>
-          <div className="layout__item u-2/3 u-1/1-palm">
-            <h1>body</h1>
+          <div className="layout__item u-1/1 u-1/1-palm">
+            {this.renderSearch()}
+            {this.props.spotifySelectedArtist.size ? this.renderSliders() : null}
           </div>
         </div>
       </div>
@@ -77,10 +74,12 @@ export const App = React.createClass({
 
   renderSearch() {
     return <div className="search u-pt palm-pt-">
-      <Typeahead fetchData={this.searchSpotifyArtist}
+      <Typeahead placeholder="Artist search"
+                 fetchData={this.searchSpotifyArtist}
                  results={this.props.spotifySearchResults}
                  renderResult={this.renderSpotifySearchResult} 
-                 onSelect={this.handleArtistSelect} />
+                 onSelect={this.handleArtistSelect}
+                 selectedValueLabel="name"/>
     </div>
   },
 
@@ -116,7 +115,7 @@ export const App = React.createClass({
     return <div className="sliders">
       {sliders.map((slider, index) => this.renderSlider(`target_${slider}`, index))}
       <button className="btn u-1/1" onClick={this.fetchRecs}>
-        Make Dat Playlist
+        Make playlist
       </button>
     </div>
   },
@@ -158,8 +157,8 @@ export const App = React.createClass({
     }
   },
 
-  handleArtistSelect(result) {
-    console.log(result.toJSON());
+  handleArtistSelect(artist) {
+    this.props.setSpotifyArtist(artist);
   }
 
 });

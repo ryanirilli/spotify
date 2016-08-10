@@ -4,7 +4,8 @@ const initialState = fromJS({
   isAuthenticated: false,
   shouldFetchRecs: false,
   searchResults: [],
-  recs: {}
+  recs: {},
+  artist: {}
 });
 
 export default function(state = initialState, action = {}) {
@@ -17,6 +18,8 @@ export default function(state = initialState, action = {}) {
       return state.set('searchResults', fromJS(action.spotifySearchResults));
     case 'RESET_SPOTIFY_SEARCH':
       return state.set('searchResults', initialState.get('searchResults'));
+    case 'SET_SPOTIFY_ARTIST':
+      return state.set('artist', action.artist);
     default:
       return state;
   }

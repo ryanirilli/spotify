@@ -26,7 +26,13 @@ export function setSpotifySearchResults(spotifySearchResults) {
     type: 'SET_SPOTIFY_SEARCH_RESULTS',
     spotifySearchResults
   }
-  
+}
+
+export function setArtist(artist) {
+  return {
+    type: 'SET_SPOTIFY_ARTIST',
+    artist
+  }
 }
 
 export function getAccessToken() {
@@ -55,4 +61,4 @@ export function getRecs(params) {
   }
 }
 
-export default { getAccessToken, getRecs, search, resetSearch }
+export default { getAccessToken, getRecs, search, resetSearch, setArtist }
