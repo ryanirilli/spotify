@@ -35,6 +35,12 @@ export function setArtist(artist) {
   }
 }
 
+export function reset() {
+  return {
+    type: 'RESET_SPOTIFY'
+  }
+}
+
 export function getAccessToken() {
   return dispatch => {
     Spotify.getAccessToken()
@@ -61,4 +67,4 @@ export function getRecs(params) {
   }
 }
 
-export default { getAccessToken, getRecs, search, resetSearch, setArtist }
+export default { getAccessToken, getRecs, search, resetSearch, setArtist, reset }

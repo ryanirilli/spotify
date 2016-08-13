@@ -1,0 +1,54 @@
+import React from 'react';
+import raf from 'raf';
+
+export default React.createClass({
+
+  getInitialState() {
+    return {
+      playerProgress: null,
+      progressBarWidth: 0
+    }
+  },
+
+  render() {
+    const { track } = this.props;
+    const { progressBarWidth } = this.state;
+    return <div className="spotify-track">
+      <div className="spotify-track__img">
+        <img className="u-1/1"
+             src={track.getIn(['album', 'images', 0, 'url'])}
+             onMouseEnter={this.playPreview}
+             onMouseLeave={this.pausePreview}/>
+        <audio className="spotify-track__preview"
+               ref="preview"
+               src={track.get('preview_url')} />
+        <div className="spotify-track__progress">
+          <div className="spotify-track__progress-bar" 
+               style={{width: `${progressBarWidth}%`}} />
+        </div>
+      </div>
+    </div>
+  },
+
+  setProgressBar() {
+    const { preview } = this.refs;
+    const { currentTime } = preview;
+    const progressBarWidth = (currentTime/30)*100;
+    const playerProgress = raf(() => { this.setProgressBar() });
+    this.setState({ playerProgress, progressBarWidth });
+  },
+
+  playPreview() {
+    const {preview} = this.refs;
+    preview.play(0);
+    const playerProgress = raf(() => { this.setProgressBar() });
+    this.setState({ playerProgress });
+  },
+
+  pausePreview() {
+    const {preview} = this.refs;
+    preview.pause();
+    const { playerProgress } = this.state;
+    raf.cancel(playerProgress);
+  }
+});

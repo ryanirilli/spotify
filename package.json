@@ -23,6 +23,7 @@
       "inuit-widths": "npm:inuit-widths@^0.4.2",
       "jsx": "github:floatdrop/plugin-jsx@^1.2.1",
       "query-string": "npm:query-string@^4.2.2",
+      "raf": "npm:raf@^3.2.0",
       "react": "npm:react@^15.0.1",
       "react-addons-test-utils": "npm:react-addons-test-utils@^15.0.1",
       "react-dom": "npm:react-dom@^15.0.1",

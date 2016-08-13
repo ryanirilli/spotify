@@ -1,15 +1,18 @@
-$rangeslider-handle-size-desk:     30px;
+$rangeslider-handle-size-desk:     20px;
 $rangeslider-handle-size-palm:     40px;
+$rangeslider-height:               26px;
 $range-slider-fill-color:          green    !default;
 $range-slider-bg-color:            blue     !default;
 $range-slider-handle-bg-color:     red      !default;
 $range-slider-handle-border-color: purple   !default;
 
 .rangeslider {
-  height: 10px;
+  height: $rangeslider-height;
+  border-radius: $rangeslider-height/2;
   margin: 20px 0;
   position: relative;
   background: $range-slider-bg-color;
+  padding: 0 10px;
 }
 
 .rangeslider,
@@ -26,6 +29,7 @@ $range-slider-handle-border-color: purple   !default;
   height: 30%;
   background: $range-slider-fill-color;
   top: 35%;
+  border-radius: 10px;
 }
 
 .rangeslider__handle {
@@ -38,8 +42,13 @@ $range-slider-handle-border-color: purple   !default;
   box-shadow: 0 0 3px rgba(0,0,0,0.4);
   width: $rangeslider-handle-size-desk;
   height: $rangeslider-handle-size-desk;
-  top: -($rangeslider-handle-size-desk/2) + 5;
+  top: 2px;
+  border-radius: $rangeslider-handle-size-desk/2;
   @include vendor(user-select, none);
+  &:hover,
+  &:active {
+    background-color: darken($range-slider-handle-bg-color, 10%);
+  }
   &:active {
     box-shadow: 0 0 3px rgba(0,0,0,0.2);
     cursor: grabbing;
@@ -49,7 +58,7 @@ $range-slider-handle-border-color: purple   !default;
   @include media-query(palm) {
     width: $rangeslider-handle-size-palm,;
     height: $rangeslider-handle-size-palm;
-    top: -($rangeslider-handle-size-palm/2) + 5;
+    border-radius: $rangeslider-handle-size-palm/2;
   }
 }
 

@@ -6,6 +6,7 @@ import Spotify from './../action-creators/spotify';
 
 import RangeSlider from './RangeSlider.jsx!';
 import Typeahead from './Typeahead.jsx!';
+import SpotifyTrack from './SpotifyTrack.jsx!';
 
 import { List, Map } from 'immutable';
 
@@ -24,7 +25,8 @@ function mapDispatchToProps(dispatch) {
     getSpotfyRecs: Spotify.getRecs,
     spotifySearch: Spotify.search,
     resetSpotifySearch: Spotify.resetSearch,
-    setSpotifyArtist: Spotify.setArtist
+    setSpotifyArtist: Spotify.setArtist,
+    resetSpotify: Spotify.reset
   }, dispatch);
 }
 
@@ -51,7 +53,6 @@ export const App = React.createClass({
     sliders.forEach(slider => sliderValues[`target_${slider}`] = 0);
     return {
       targets: Object.assign({}, sliderValues),
-      searchResultsAnimation: []
     };
   },
 
@@ -60,14 +61,31 @@ export const App = React.createClass({
       return null;
     }
 
+    const shouldShowSliders = this.props.spotifySelectedArtist.size && !this.props.spotifyRecs.size;
+
     return <div className="app-container">
       <div className="section-main palm-ph-">
         <div className="layout">
-          <div className="layout__item u-1/1 u-1/1-palm">
+          <div className="layout__item u-1/1">
             {this.renderSearch()}
-            {this.props.spotifySelectedArtist.size ? this.renderSliders() : null}
+            {shouldShowSliders ? this.renderSliders() : null}
+            {this.props.spotifyRecs.size ? this.renderTracks() : null}
           </div>
         </div>
+      </div>
+    </div>
+  },
+
+  renderTracks() {
+    return <div className="layout u-mt">
+      {this.props.spotifyRecs.get('tracks').map(track => this.renderTrack(track))}
+    </div>
+  },
+
+  renderTrack(track) {
+    return <div key={track.get('id')} className="layout__item u-1/5 u-1/1-palm">
+      <div className="u-mb">
+        <SpotifyTrack track={track} />  
       </div>
     </div>
   },
@@ -112,7 +130,7 @@ export const App = React.createClass({
   },
 
   renderSliders() {
-    return <div className="sliders">
+    return <div className="sliders u-mt+">
       {sliders.map((slider, index) => this.renderSlider(`target_${slider}`, index))}
       <button className="btn u-1/1" onClick={this.fetchRecs}>
         Make playlist
@@ -122,7 +140,7 @@ export const App = React.createClass({
 
   renderSlider(key, index) {
     return <div key={key}>
-      <label>{sliders[index]}</label>
+      <label>{sliders[index]} {this.getSliderVal(key)}%</label>
       <RangeSlider min={0} max={100} step={1} value={this.state.targets[key]} onChange={val => this.setSliderVal(key, val) } />
     </div>
   },
@@ -133,14 +151,17 @@ export const App = React.createClass({
     this.setState({ targets });
   },
 
+  getSliderVal(key) {
+    return this.state.targets[key];
+  },
+
   fetchRecs() {
     const params = {
-      seed_genres: 'hip+hop',
-      seed_artists: '4NHQUGzhtTLFvgF5SZesLK'
+      seed_artists: this.props.spotifySelectedArtist.get('id')
     };
 
     sliders.forEach(slider => {
-      const key = `target_${slider}`;
+      const key = `min_${slider}`;
       const val = this.state.targets[key];
       if(val) {
         params[key] = val/100;
@@ -158,6 +179,8 @@ export const App = React.createClass({
   },
 
   handleArtistSelect(artist) {
+    this.props.resetSpotify();
+    this.setState(this.getInitialState());
     this.props.setSpotifyArtist(artist);
   }
 

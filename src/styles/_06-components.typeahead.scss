@@ -1,6 +1,7 @@
-$typeahead-main-bg: #333745;
-$typeahead-main-color: #77C4D3;
-$typeahead-border-radius: 4px;
+$typeahead-main-bg: #333745 !default;
+$typeahead-main-color: #77C4D3 !default;
+$typeahead-border-radius: 4px !default;
+$typeahead-border-color: #727b9c !default;
 
 
 .typeahead {
@@ -23,6 +24,9 @@ $typeahead-border-radius: 4px;
 .typeahead__input {
   position: relative;
   z-index: 1;
+  border-color: $typeahead-border-color;
+  border-width: 1px;
+  border-style: solid;
 }
 
 .typeahead__close-mask {
@@ -36,7 +40,6 @@ $typeahead-border-radius: 4px;
 .typeahead--main {
 
   .typeahead__input {
-    border: none;
     background: $typeahead-main-bg;
     padding: 6px;
     color: $typeahead-main-color;
@@ -45,7 +48,11 @@ $typeahead-border-radius: 4px;
   }
 
   .typeahead__results {
-    background: $typeahead-main-bg;
+    background: darken($typeahead-main-bg, 5%);
+    border-top: none !important;
+    border-color: $typeahead-border-color;
+    border-width: 1px;
+    border-style: solid;
   }
 
   .typeahead__result {

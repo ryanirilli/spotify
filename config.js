@@ -39,6 +39,7 @@ System.config({
     "inuit-widths": "npm:inuit-widths@0.4.2",
     "jsx": "github:floatdrop/plugin-jsx@1.2.1",
     "query-string": "npm:query-string@4.2.2",
+    "raf": "npm:raf@3.2.0",
     "react": "npm:react@15.2.1",
     "react-addons-test-utils": "npm:react-addons-test-utils@15.0.1",
     "react-dom": "npm:react-dom@15.0.1",
@@ -87,7 +88,7 @@ System.config({
       "path-browserify": "npm:path-browserify@0.0.0"
     },
     "github:jspm/nodelibs-process@0.1.2": {
-      "process": "npm:process@0.11.5"
+      "process": "npm:process@0.11.8"
     },
     "github:jspm/nodelibs-stream@0.1.0": {
       "stream-browserify": "npm:stream-browserify@1.0.0"
@@ -561,11 +562,14 @@ System.config({
       "process": "github:jspm/nodelibs-process@0.1.2",
       "systemjs-json": "github:systemjs/plugin-json@0.1.2"
     },
+    "npm:performance-now@0.2.0": {
+      "process": "github:jspm/nodelibs-process@0.1.2"
+    },
     "npm:process-nextick-args@1.0.7": {
       "process": "github:jspm/nodelibs-process@0.1.2",
       "systemjs-json": "github:systemjs/plugin-json@0.1.2"
     },
-    "npm:process@0.11.5": {
+    "npm:process@0.11.8": {
       "assert": "github:jspm/nodelibs-assert@0.1.0",
       "fs": "github:jspm/nodelibs-fs@0.1.2",
       "vm": "github:jspm/nodelibs-vm@0.1.0"
@@ -595,6 +599,10 @@ System.config({
     "npm:query-string@4.2.2": {
       "object-assign": "npm:object-assign@4.1.0",
       "strict-uri-encode": "npm:strict-uri-encode@1.1.0"
+    },
+    "npm:raf@3.2.0": {
+      "performance-now": "npm:performance-now@0.2.0",
+      "process": "github:jspm/nodelibs-process@0.1.2"
     },
     "npm:randombytes@2.0.3": {
       "buffer": "github:jspm/nodelibs-buffer@0.1.0",

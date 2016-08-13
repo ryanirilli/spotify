@@ -2,6 +2,7 @@
 @import "01-settings.inuit-spacing";
 @import "01-settings.inuit-layout";
 @import "01-settings.inuit-media";
+@import "01-settings.colors";
 
 @import "jspm:inuit-defaults/settings.defaults";
 @import "jspm:inuit-responsive-settings/settings.responsive";
@@ -14,6 +15,8 @@
 @import 'jspm:inuit-page/base.page';
 
 @import "02-tools.mixins";
+
+@import "04-elements.page";
 
 @import 'jspm:inuit-buttons/objects.buttons';
 @import 'jspm:inuit-layout/objects.layout';
@@ -30,6 +33,7 @@
 @import "05-objects.sections";
 
 @import "06-components.range-slider";
+@import "06-components.spotify-track";
 @import "06-components.typeahead";
 
 @import "07-trumps.display";
