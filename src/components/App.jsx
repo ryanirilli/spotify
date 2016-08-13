@@ -61,14 +61,11 @@ export const App = React.createClass({
       return null;
     }
 
-    const shouldShowSliders = this.props.spotifySelectedArtist.size && !this.props.spotifyRecs.size;
-
     return <div className="app-container">
       <div className="section-main palm-ph-">
         <div className="layout">
           <div className="layout__item u-1/1">
             {this.renderSearch()}
-            {shouldShowSliders ? this.renderSliders() : null}
             {this.props.spotifyRecs.size ? this.renderTracks() : null}
           </div>
         </div>
@@ -155,9 +152,9 @@ export const App = React.createClass({
     return this.state.targets[key];
   },
 
-  fetchRecs() {
+  fetchRecs(artistId) {
     const params = {
-      seed_artists: this.props.spotifySelectedArtist.get('id')
+      seed_artists: artistId
     };
 
     sliders.forEach(slider => {
@@ -167,6 +164,7 @@ export const App = React.createClass({
         params[key] = val/100;
       }
     });
+    
     this.props.getSpotfyRecs(params);
   },
 
@@ -182,6 +180,7 @@ export const App = React.createClass({
     this.props.resetSpotify();
     this.setState(this.getInitialState());
     this.props.setSpotifyArtist(artist);
+    this.fetchRecs(artist.get('id'));
   }
 
 });

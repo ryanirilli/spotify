@@ -25,3 +25,12 @@ $spotify-track-progress-bg: red !default;
   height: 100%;
   background: $spotify-track-progress-bg;
 }
+
+.spotify-track__img {
+  opacity: 0;
+  @include vendor(transition, opacity 500ms ease);
+}
+
+.spotify-track__img--loaded {
+  opacity: 1;
+}

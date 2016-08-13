@@ -6,26 +6,37 @@ export default React.createClass({
   getInitialState() {
     return {
       playerProgress: null,
-      progressBarWidth: 0
+      progressBarWidth: 0,
+      isImgLoaded: false
     }
+  },
+
+  componentDidMount() {
+    const { track } = this.props;
+    const { trackImg } = this.refs;
+    const imgUrl = track.getIn(['album', 'images', 1, 'url']);
+    const img = new Image();
+    img.src = imgUrl;
+    img.onload = () => {
+      trackImg.src = imgUrl;
+      trackImg.classList.add('spotify-track__img--loaded');
+    };
   },
 
   render() {
     const { track } = this.props;
     const { progressBarWidth } = this.state;
     return <div className="spotify-track">
-      <div className="spotify-track__img">
-        <img className="u-1/1"
-             src={track.getIn(['album', 'images', 0, 'url'])}
-             onMouseEnter={this.playPreview}
-             onMouseLeave={this.pausePreview}/>
-        <audio className="spotify-track__preview"
-               ref="preview"
-               src={track.get('preview_url')} />
-        <div className="spotify-track__progress">
-          <div className="spotify-track__progress-bar" 
-               style={{width: `${progressBarWidth}%`}} />
-        </div>
+      <img ref="trackImg"
+           className="u-1/1 spotify-track__img"
+           onMouseEnter={this.playPreview}
+           onMouseLeave={this.pausePreview} />
+      <audio className="spotify-track__preview"
+             ref="preview"
+             src={track.get('preview_url')} />
+      <div className="spotify-track__progress">
+        <div className="spotify-track__progress-bar" 
+             style={{width: `${progressBarWidth}%`}} />
       </div>
     </div>
   },
