@@ -74,7 +74,7 @@ export const App = React.createClass({
   },
 
   renderTracks() {
-    return <div className="layout u-mt">
+    return <div className="spotify-tracks layout u-mt">
       {this.props.spotifyRecs.get('tracks').map(track => this.renderTrack(track))}
     </div>
   },

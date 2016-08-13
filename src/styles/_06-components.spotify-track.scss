@@ -1,4 +1,9 @@
 $spotify-track-progress-bg: red !default;
+$spotify-track-details-color: red !default;
+
+.spotify-tracks:hover .spotify-track:not(:hover) {
+  opacity: 0.4;
+}
 
 .spotify-track {
   overflow: hidden;
@@ -26,11 +31,26 @@ $spotify-track-progress-bg: red !default;
   background: $spotify-track-progress-bg;
 }
 
+.spotify-track__details,
 .spotify-track__img {
   opacity: 0;
   @include vendor(transition, opacity 500ms ease);
 }
 
+.spotify-track:hover .spotify-track__details,
 .spotify-track__img--loaded {
   opacity: 1;
+}
+
+
+
+.spotify-track__details {
+  background: black;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 3px;
+  font-size: 12px;
+  color: $spotify-track-details-color;
 }

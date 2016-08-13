@@ -27,6 +27,17 @@ export default React.createClass({
     const { track } = this.props;
     const { progressBarWidth } = this.state;
     return <div className="spotify-track">
+
+      <div className="spotify-track__details">
+        <div className="spotify-track__artist">
+          {track.getIn(['artists', 0, 'name'])}
+        </div>
+        <div className="spotify-track__name">
+          {track.get('name')}
+        </div>
+      </div>
+
+
       <img ref="trackImg"
            className="u-1/1 spotify-track__img"
            onMouseEnter={this.playPreview}
