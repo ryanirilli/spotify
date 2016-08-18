@@ -26,24 +26,22 @@ export default React.createClass({
   render() {
     const { track } = this.props;
     const { progressBarWidth } = this.state;
-    return <div className="spotify-track">
-
+    return <div className="spotify-track"
+                onMouseEnter={this.playPreview}
+                onMouseLeave={this.pausePreview}>
       <div className="spotify-track__details">
         <div className="spotify-track__artist">
           {track.getIn(['artists', 0, 'name'])}
         </div>
-        <div className="spotify-track__name">
+        <div className="spotify-track__name text-truncate">
           <a href={track.get('uri')}>
             {track.get('name')}
           </a>
         </div>
       </div>
 
-
       <img ref="trackImg"
-           className="u-1/1 spotify-track__img"
-           onMouseEnter={this.playPreview}
-           onMouseLeave={this.pausePreview} />
+           className="u-1/1 spotify-track__img"/>
       <audio className="spotify-track__preview"
              ref="preview"
              src={track.get('preview_url')} />

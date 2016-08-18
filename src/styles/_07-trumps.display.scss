@@ -25,3 +25,7 @@
     opacity: $i/10;
   }
 }
+
+.text-truncate {
+  @include text-truncate;
+}
