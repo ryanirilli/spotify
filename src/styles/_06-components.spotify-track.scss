@@ -52,5 +52,7 @@ $spotify-track-details-color: red !default;
   width: 100%;
   padding: 3px;
   font-size: 12px;
-  color: $spotify-track-details-color;
+  a, & {
+    color: $spotify-track-details-color;
+  }
 }

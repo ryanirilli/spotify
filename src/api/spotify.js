@@ -8,7 +8,8 @@ export function getAccessToken() {
 }
 
 export function getRecs(params) {
-  return request(`${baseUrl}/recommendations?${queryString.stringify(params)}`);
+  const _params = Object.assign({}, {limit: 100}, params);
+  return request(`${baseUrl}/recommendations?${queryString.stringify(_params)}`);
 }
 
 export function search(opts) {

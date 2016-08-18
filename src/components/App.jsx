@@ -1,6 +1,7 @@
 import React from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import { debounce } from './../utils/utils';
 
 import Spotify from './../action-creators/spotify';
 
@@ -15,14 +16,15 @@ function mapStateToProps(state) {
     isSpotifyAuthenticated: state.spotify.get('isAuthenticated'),
     spotifyRecs: state.spotify.get('recs'),
     spotifySearchResults: state.spotify.get('searchResults'),
-    spotifySelectedArtist: state.spotify.get('artist')
+    spotifySelectedArtist: state.spotify.get('artist'),
+    isFetchingSpotifyRecs: state.spotify.get('isFetchingRecs')
   };
 }
 
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({
     getSpotifyAccessToken: Spotify.getAccessToken,
-    getSpotfyRecs: Spotify.getRecs,
+    fetchSpotfyRecs: Spotify.fetchRecs,
     spotifySearch: Spotify.search,
     resetSpotifySearch: Spotify.resetSearch,
     setSpotifyArtist: Spotify.setArtist,
@@ -31,16 +33,17 @@ function mapDispatchToProps(dispatch) {
 }
 
 const sliders = [
-  'acousticness',
-  'danceability',
-  'energy',
-  'instrumentalness',
-  'liveness',
-  'loudness',
   'popularity',
-  'speechiness',
-  'valence'
+  'acousticness',
+  'danceability'
 ];
+
+const zeroToOneSliders = [
+  'acousticness',
+  'danceability'
+];
+
+const spotifyPropertyPrefix = 'target'; //min or target
 
 export const App = React.createClass({
 
@@ -50,9 +53,10 @@ export const App = React.createClass({
 
   getInitialState() {
     const sliderValues = {};
-    sliders.forEach(slider => sliderValues[`target_${slider}`] = 0);
+    sliders.forEach(slider => sliderValues[`${spotifyPropertyPrefix}_${slider}`] = 0);
     return {
       targets: Object.assign({}, sliderValues),
+      debouncedFetchRecs: debounce(this.fetchRecs, 1000)
     };
   },
 
@@ -62,15 +66,34 @@ export const App = React.createClass({
     }
 
     return <div className="app-container">
-      <div className="section-main palm-ph-">
+
+      {this.props.isFetchingSpotifyRecs ? this.renderLoading() : null}
+
+      <div className="fixed-top bg-black">
+        <div className="section-main palm-ph-">
+          {this.renderSearch()}
+        </div>
+      </div>
+
+      <div className="section-main palm-ph- u-pt+">
         <div className="layout">
-          <div className="layout__item u-1/1">
-            {this.renderSearch()}
+          <div className="layout__item u-1/4">
+            {this.props.spotifyRecs.size ? this.renderSidebar() : null}
+          </div>
+          <div className="layout__item u-3/4">
             {this.props.spotifyRecs.size ? this.renderTracks() : null}
           </div>
         </div>
       </div>
     </div>
+  },
+
+  renderLoading() {
+    return <div className="loader"></div>
+  },
+
+  renderSidebar() {
+    return this.renderSliders();
   },
 
   renderTracks() {
@@ -128,10 +151,7 @@ export const App = React.createClass({
 
   renderSliders() {
     return <div className="sliders u-mt+">
-      {sliders.map((slider, index) => this.renderSlider(`target_${slider}`, index))}
-      <button className="btn u-1/1" onClick={this.fetchRecs}>
-        Make playlist
-      </button>
+      {sliders.map((slider, index) => this.renderSlider(`${spotifyPropertyPrefix}_${slider}`, index))}
     </div>
   },
 
@@ -146,6 +166,7 @@ export const App = React.createClass({
     const targets = Object.assign({}, this.state.targets);
     targets[key] = val;
     this.setState({ targets });
+    this.state.debouncedFetchRecs(this.props.spotifySelectedArtist.get('id'));
   },
 
   getSliderVal(key) {
@@ -158,14 +179,14 @@ export const App = React.createClass({
     };
 
     sliders.forEach(slider => {
-      const key = `min_${slider}`;
+      const key = `${spotifyPropertyPrefix}_${slider}`;
       const val = this.state.targets[key];
       if(val) {
-        params[key] = val/100;
+        params[key] = zeroToOneSliders.indexOf(slider) > -1 ? val/100 : val;
       }
     });
     
-    this.props.getSpotfyRecs(params);
+    this.props.fetchSpotfyRecs(params);
   },
 
   searchSpotifyArtist(val) {

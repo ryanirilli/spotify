@@ -33,7 +33,9 @@ export default React.createClass({
           {track.getIn(['artists', 0, 'name'])}
         </div>
         <div className="spotify-track__name">
-          {track.get('name')}
+          <a href={track.get('uri')}>
+            {track.get('name')}
+          </a>
         </div>
       </div>
 

@@ -8,6 +8,13 @@ export function setIsAuthenticated(isAuthenticated) {
   }
 }
 
+export function setIsFetchingRecs(isFetchingRecs) {
+  return {
+    type: 'SET_IS_FETCHING_RECS',
+    isFetchingRecs
+  }
+}
+
 export function resetSearch() {
   return {
     type: 'RESET_SPOTIFY_SEARCH'
@@ -60,11 +67,23 @@ export function search(artist) {
   }
 }
 
-export function getRecs(params) {
+export function fetchRecs(params) {
   return dispatch => {
+    dispatch(setIsFetchingRecs(true));
     Spotify.getRecs(params)
-      .then(payload => dispatch(setSpotifyRecs(payload.json)));
+      .then(payload => {
+        dispatch(setSpotifyRecs(payload.json));
+        dispatch(setIsFetchingRecs(false));
+      });
   }
 }
 
-export default { getAccessToken, getRecs, search, resetSearch, setArtist, reset }
+export default {
+  getAccessToken,
+  fetchRecs,
+  search,
+  resetSearch,
+  setArtist,
+  reset,
+  setIsFetchingRecs
+}

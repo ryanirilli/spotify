@@ -2,6 +2,14 @@
   display: inline-block;
 }
 
+.fixed-top {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1;
+}
+
 .float-right {
   float: right;
 }
