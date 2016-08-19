@@ -5,9 +5,10 @@ import { debounce } from './../utils/utils';
 
 import Spotify from './../action-creators/spotify';
 
+import Drawer from './Drawer.jsx!';
 import RangeSlider from './RangeSlider.jsx!';
-import Typeahead from './Typeahead.jsx!';
 import SpotifyTrack from './SpotifyTrack.jsx!';
+import Typeahead from './Typeahead.jsx!';
 
 import { List, Map } from 'immutable';
 
@@ -49,6 +50,7 @@ export const App = React.createClass({
 
   componentWillMount() {
     this.props.getSpotifyAccessToken();
+    this.fetchRecs('1GAS0rb4L8VTPvizAx2O9J');
   },
 
   getInitialState() {
@@ -56,7 +58,8 @@ export const App = React.createClass({
     sliders.forEach(slider => sliderValues[`${spotifyPropertyPrefix}_${slider}`] = 0);
     return {
       targets: Object.assign({}, sliderValues),
-      debouncedFetchRecs: debounce(this.fetchRecs, 1000)
+      debouncedFetchRecs: debounce(this.fetchRecs, 1000),
+      isSpotifySlidersDrawerOpen: true
     };
   },
 
@@ -93,7 +96,17 @@ export const App = React.createClass({
   },
 
   renderSidebar() {
-    return this.renderSliders();
+    return <div className="sidebar u-pt">
+      <div className="drawer-header" onClick={this.toggleSpotifySlidersDrawer}>
+        Advanced Settings
+      </div>
+      <Drawer isOpen={this.state.isSpotifySlidersDrawerOpen}>
+        {this.renderSliders()}
+      </Drawer>
+      <div className="drawer-header" onClick={this.toggleSpotifySlidersDrawer}>
+        My playlists
+      </div>
+    </div>
   },
 
   renderTracks() {
@@ -150,16 +163,29 @@ export const App = React.createClass({
   },
 
   renderSliders() {
-    return <div className="sliders u-mt+">
+    return <div className="sliders u-ph-- u-pv-">
       {sliders.map((slider, index) => this.renderSlider(`${spotifyPropertyPrefix}_${slider}`, index))}
     </div>
   },
 
   renderSlider(key, index) {
+    let label = sliders[index];
+    switch(label) {
+      case 'acousticness':
+        label = 'chillness';
+        break;
+      case 'danceability':
+        label = 'groveability';
+        break;
+    }
     return <div key={key}>
-      <label>{sliders[index]} {this.getSliderVal(key)}%</label>
+      <label>{label} {this.getSliderVal(key)}%</label>
       <RangeSlider min={0} max={100} step={1} value={this.state.targets[key]} onChange={val => this.setSliderVal(key, val) } />
     </div>
+  },
+
+  toggleSpotifySlidersDrawer() {
+    this.setState({isSpotifySlidersDrawerOpen: !this.state.isSpotifySlidersDrawerOpen});
   },
 
   setSliderVal(key, val) {

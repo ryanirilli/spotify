@@ -1,0 +1,24 @@
+.drawer-header {
+  background: rgba(0,0,0,0.35);
+  padding: 8px 8px;
+  cursor: pointer;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-bottom: 1px solid #4a4a4a;
+  &:hover {
+    color: white;
+  }
+}
+
+.drawer__body {
+  height: 0;
+  @include vendor(transition, height 500ms ease);
+  overflow: hidden;
+}
+
+.drawer__body--after-open {
+  overflow: visible;
+  height: auto !important;
+}
+
