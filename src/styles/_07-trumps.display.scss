@@ -29,3 +29,13 @@
 .text-truncate {
   @include text-truncate;
 }
+
+.droppable {
+  border: 1px dashed transparent;
+}
+
+.droppable--hover {
+  border-color: $droppable-border-color;
+  color: $droppable-border-color;
+  background: rgba(0, 0, 0, 0.19);
+}

@@ -1,0 +1,11 @@
+.list-hover-main {
+  >li:hover {
+    background: rgba(0,0,0,0.2);
+  }
+}
+
+.list-short {
+  overflow-y: scroll;
+  max-height: 300px;
+  border-bottom: 4px solid rgba(0, 0, 0, 0.4);
+}

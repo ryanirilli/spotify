@@ -1,16 +1,18 @@
 import React from 'react';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
-import { debounce } from './../utils/utils';
+import {bindActionCreators} from 'redux';
+import {connect} from 'react-redux';
+import {debounce} from './../utils/utils';
 
 import Spotify from './../action-creators/spotify';
+import SpotifyArtistDetails from './../action-creators/spotify-artist-details';
 
 import Drawer from './Drawer.jsx!';
 import RangeSlider from './RangeSlider.jsx!';
 import SpotifyTrack from './SpotifyTrack.jsx!';
 import Typeahead from './Typeahead.jsx!';
+import Waypoint from './Waypoint.jsx!';
 
-import { List, Map } from 'immutable';
+import {List, Map} from 'immutable';
 
 function mapStateToProps(state) {
   return {
@@ -18,7 +20,11 @@ function mapStateToProps(state) {
     spotifyRecs: state.spotify.get('recs'),
     spotifySearchResults: state.spotify.get('searchResults'),
     spotifySelectedArtist: state.spotify.get('artist'),
-    isFetchingSpotifyRecs: state.spotify.get('isFetchingRecs')
+    isFetchingSpotifyRecs: state.spotify.get('isFetchingRecs'),
+    isSpotifyUserAuthenticated: state.spotify.get('isUserAuthenticated'),
+    spotifyUserPlaylists: state.spotify.get('userPlaylists'),
+    spotifyArtistDetails: state.spotifyArtistDetails.get('artist'),
+    spotifyArtistAlbums: state.spotifyArtistDetails.get('albums')
   };
 }
 
@@ -29,7 +35,11 @@ function mapDispatchToProps(dispatch) {
     spotifySearch: Spotify.search,
     resetSpotifySearch: Spotify.resetSearch,
     setSpotifyArtist: Spotify.setArtist,
-    resetSpotify: Spotify.reset
+    resetSpotify: Spotify.reset,
+    spotifyLogin: Spotify.login,
+    addSpotifyTrackToPLaylist: Spotify.addTrackToPlaylist,
+    fetchSpotifyArtist: SpotifyArtistDetails.fetchArtistDetails,
+    fetchSpotifyArtistAlbums: SpotifyArtistDetails.fetchArtistAlbums
   }, dispatch);
 }
 
@@ -50,7 +60,6 @@ export const App = React.createClass({
 
   componentWillMount() {
     this.props.getSpotifyAccessToken();
-    this.fetchRecs('1GAS0rb4L8VTPvizAx2O9J');
   },
 
   getInitialState() {
@@ -59,12 +68,14 @@ export const App = React.createClass({
     return {
       targets: Object.assign({}, sliderValues),
       debouncedFetchRecs: debounce(this.fetchRecs, 1000),
-      isSpotifySlidersDrawerOpen: true
+      isSpotifySlidersDrawerOpen: true,
+      isSpotifyPlaylistsDrawerOpen: true,
+      playlistDrawerReset: 0
     };
   },
 
   render() {
-    if(!this.props.isSpotifyAuthenticated) {
+    if (!this.props.isSpotifyAuthenticated) {
       return null;
     }
 
@@ -73,19 +84,33 @@ export const App = React.createClass({
       {this.props.isFetchingSpotifyRecs ? this.renderLoading() : null}
 
       <div className="fixed-top bg-black">
-        <div className="section-main palm-ph-">
+        <div className="section-main u-ph-">
           {this.renderSearch()}
         </div>
       </div>
 
-      <div className="section-main palm-ph- u-pt+">
-        <div className="layout">
-          <div className="layout__item u-1/4">
-            {this.props.spotifyRecs.size ? this.renderSidebar() : null}
-          </div>
-          <div className="layout__item u-3/4">
-            {this.props.spotifyRecs.size ? this.renderTracks() : null}
-          </div>
+      <div className="u-pt+">
+        {this.props.spotifyRecs.size ? this.renderSpotifyRecs() : this.renderInitialScreen()}
+      </div>
+    </div>
+  },
+
+  renderInitialScreen() {
+    return <div className="initial-screen u-pt+">
+      <div className="initial-screen__content">
+        <h1>Initial</h1>
+      </div>
+    </div>
+  },
+
+  renderSpotifyRecs() {
+    return <div className="section-main u-ph-">
+      <div className="layout">
+        <div className="layout__item u-1/4">
+          {this.renderSidebar()}
+        </div>
+        <div className="layout__item u-3/4">
+          {this.renderTracks()}
         </div>
       </div>
     </div>
@@ -100,13 +125,52 @@ export const App = React.createClass({
       <div className="drawer-header" onClick={this.toggleSpotifySlidersDrawer}>
         Advanced Settings
       </div>
-      <Drawer isOpen={this.state.isSpotifySlidersDrawerOpen}>
+      <Drawer isOpen={this.state.isSpotifySlidersDrawerOpen} onToggleCallback={this.onPlaylistDrawerToggle}>
         {this.renderSliders()}
       </Drawer>
-      <div className="drawer-header" onClick={this.toggleSpotifySlidersDrawer}>
-        My playlists
-      </div>
+
+      <Waypoint offsetTop={66} reset={this.state.playlistDrawerReset}>
+        <div className="drawer-header" onClick={this.toggleSpotifyPlaylistsDrawer} onToggleCallback={this.onPlaylistDrawerToggle}>
+          My playlists
+        </div>
+        <Drawer isOpen={this.state.isSpotifyPlaylistsDrawerOpen}>
+          {this.props.isSpotifyUserAuthenticated ? this.renderUserPlaylists() : this.renderSpotifyLoginButton()}
+        </Drawer>
+      </Waypoint>
     </div>
+  },
+
+  renderSpotifyLoginButton() {
+    return [
+      <p key="0">
+        Drag and drop tracks directly to your playlists. You need to connect to Spotify to enable this feature.
+      </p>,
+      <button key="1" className="btn btn--small btn--pill u-1/1" onClick={() => window.open("/api/v1/spotify-login") }>
+        <i className="icon-spotify"/> Spotify login
+      </button>
+    ]
+  },
+
+  renderUserPlaylists() {
+    const playlists = this.props.spotifyUserPlaylists.get('items') || [];
+    return <div>
+      <ul className="list-bare list-hover-main list-short">
+        {playlists.map(playlist => this.renderPlaylist(playlist))}
+      </ul>
+    </div>
+  },
+
+  renderPlaylist(playlist) {
+    const playlistId = playlist.get('id');
+    return <li key={playlistId}
+               ref={playlistId}
+               className={`u-ph- u-pv-- text-truncate droppable`}
+               onDragOver={this.onDragOver}
+               onDrop={e => this.handleTrackDrop(e, playlistId)}
+               onDragEnter={e => this.onDragEnter(playlistId)}
+               onDragLeave={e => this.onDragLeave(playlistId)}>
+      {playlist.get('name')}
+    </li>
   },
 
   renderTracks() {
@@ -118,7 +182,7 @@ export const App = React.createClass({
   renderTrack(track) {
     return <div key={track.get('id')} className="layout__item u-1/5 u-1/1-palm">
       <div className="u-mb">
-        <SpotifyTrack track={track} />  
+        <SpotifyTrack {...this.props} track={track}/>
       </div>
     </div>
   },
@@ -128,7 +192,7 @@ export const App = React.createClass({
       <Typeahead placeholder="Artist search"
                  fetchData={this.searchSpotifyArtist}
                  results={this.props.spotifySearchResults}
-                 renderResult={this.renderSpotifySearchResult} 
+                 renderResult={this.renderSpotifySearchResult}
                  onSelect={this.handleArtistSelect}
                  selectedValueLabel="name"/>
     </div>
@@ -155,10 +219,10 @@ export const App = React.createClass({
       background: 'rgba(255, 255, 255, 0.1)',
       height: '50px'
     };
-    if(url) {
-      return <img src={url} className={commonClasses} />
+    if (url) {
+      return <img src={url} className={commonClasses}/>
     } else {
-      return <div className={commonClasses} style={style} />
+      return <div className={commonClasses} style={style}/>
     }
   },
 
@@ -170,28 +234,37 @@ export const App = React.createClass({
 
   renderSlider(key, index) {
     let label = sliders[index];
-    switch(label) {
+    switch (label) {
       case 'acousticness':
         label = 'chillness';
         break;
       case 'danceability':
-        label = 'groveability';
+        label = 'grooveability';
         break;
     }
     return <div key={key}>
       <label>{label} {this.getSliderVal(key)}%</label>
-      <RangeSlider min={0} max={100} step={1} value={this.state.targets[key]} onChange={val => this.setSliderVal(key, val) } />
+      <RangeSlider min={0} max={100} step={1} value={this.state.targets[key]}
+                   onChange={val => this.setSliderVal(key, val) }/>
     </div>
+  },
+
+  onPlaylistDrawerToggle() {
+    this.setState({playlistDrawerReset: this.state.playlistDrawerReset + 1});
   },
 
   toggleSpotifySlidersDrawer() {
     this.setState({isSpotifySlidersDrawerOpen: !this.state.isSpotifySlidersDrawerOpen});
   },
 
+  toggleSpotifyPlaylistsDrawer() {
+    this.setState({isSpotifyPlaylistsDrawerOpen: !this.state.isSpotifyPlaylistsDrawerOpen});
+  },
+
   setSliderVal(key, val) {
     const targets = Object.assign({}, this.state.targets);
     targets[key] = val;
-    this.setState({ targets });
+    this.setState({targets});
     this.state.debouncedFetchRecs(this.props.spotifySelectedArtist.get('id'));
   },
 
@@ -207,17 +280,17 @@ export const App = React.createClass({
     sliders.forEach(slider => {
       const key = `${spotifyPropertyPrefix}_${slider}`;
       const val = this.state.targets[key];
-      if(val) {
-        params[key] = zeroToOneSliders.indexOf(slider) > -1 ? val/100 : val;
+      if (val) {
+        params[key] = zeroToOneSliders.indexOf(slider) > -1 ? val / 100 : val;
       }
     });
-    
+
     this.props.fetchSpotfyRecs(params);
   },
 
   searchSpotifyArtist(val) {
-    if(val) {
-      this.props.spotifySearch(val);  
+    if (val) {
+      this.props.spotifySearch(val);
     } else {
       this.props.resetSpotifySearch();
     }
@@ -228,6 +301,30 @@ export const App = React.createClass({
     this.setState(this.getInitialState());
     this.props.setSpotifyArtist(artist);
     this.fetchRecs(artist.get('id'));
+  },
+
+  handleTrackDrop(e, playlistId) {
+    e.preventDefault();
+    const track = JSON.parse(e.dataTransfer.getData('track'));
+    const {uri} = track;
+    const node = this.refs[playlistId];
+    this.props.addSpotifyTrackToPLaylist(uri, playlistId);
+    node.classList.remove('droppable--hover');
+  },
+
+  onDragOver: function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+  },
+
+  onDragEnter(playlistId) {
+    const node = this.refs[playlistId];
+    node.classList.add('droppable--hover');
+  },
+
+  onDragLeave(playlistId) {
+    const node = this.refs[playlistId];
+    node.classList.remove('droppable--hover');
   }
 
 });

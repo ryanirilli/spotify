@@ -1,3 +1,4 @@
+@import "01-settings.inuit-defaults";
 @import "01-settings.inuit-buttons";
 @import "01-settings.inuit-spacing";
 @import "01-settings.inuit-layout";
@@ -30,13 +31,18 @@
 @import "jspm:inuit-clearfix/trumps.clearfix";
 
 @import "05-objects.animations";
+@import "05-objects.fonts";
+@import "05-objects.lists";
 @import "05-objects.loader";
+@import "05-objects.modal";
 @import "05-objects.sections";
 
 @import "06-components.drawer";
+@import "06-components.intial-screen";
 @import "06-components.range-slider";
 @import "06-components.spotify-track";
 @import "06-components.typeahead";
+@import "06-components.waypoint";
 
 @import "07-trumps.bgs";
 @import "07-trumps.display";

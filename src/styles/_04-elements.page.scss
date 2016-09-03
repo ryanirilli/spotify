@@ -2,3 +2,19 @@ html {
   background: $main-bg;
   color: $main-color;
 }
+
+*::-webkit-scrollbar-track
+{
+  background-color: rgba(0, 0, 0, 0.35);
+}
+
+*::-webkit-scrollbar
+{
+  width: 6px;
+  background-color: #4d4d4d
+}
+
+*::-webkit-scrollbar-thumb
+{
+  background-color: $blue;
+}

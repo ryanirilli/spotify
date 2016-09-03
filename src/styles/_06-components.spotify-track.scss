@@ -1,5 +1,6 @@
 $spotify-track-progress-bg: red !default;
 $spotify-track-details-color: red !default;
+$spotify-details-transition-duration: 500ms;
 
 .spotify-tracks:hover .spotify-track:not(:hover) {
   opacity: 0.4;
@@ -23,7 +24,7 @@ $spotify-track-details-color: red !default;
   position: absolute;
   bottom: -30px;
   z-index: 1;
-  @include vendor(transition, all 300ms ease);
+  @include vendor(transition, all $spotify-details-transition-duration ease);
 }
 
 .spotify-track__progress-bar {
@@ -36,11 +37,12 @@ $spotify-track-details-color: red !default;
 .spotify-track__img {
   display: block;
   opacity: 0;
-  @include vendor(transition, opacity 500ms ease);
+  @include vendor(transition, opacity $spotify-details-transition-duration ease);
 }
 
 .spotify-track:hover .spotify-track__details,
-.spotify-track__img--loaded {
+.spotify-track:hover .spotify-track__more,
+.spotify-track__img--loaded{
   opacity: 1;
 }
 
@@ -54,5 +56,22 @@ $spotify-track-details-color: red !default;
   font-size: 11px;
   a, & {
     color: $spotify-track-details-color;
+  }
+}
+
+.spotify-track__more {
+  opacity: 0;
+  @include vendor(transition, opacity $spotify-details-transition-duration ease);
+  color: white;
+  position: absolute;
+  right: 3px;
+  bottom: 12px;
+  background: rgba(0, 0, 0, 0.62);
+  padding: 0px 7px;
+  line-height: 0;
+  border-radius: 10px;
+  cursor: pointer;
+  &:hover {
+    background: black;
   }
 }

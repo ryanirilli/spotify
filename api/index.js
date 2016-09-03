@@ -8,7 +8,7 @@ const cookieParser = require('cookie-parser');
 
 const port          = 8888;
 const stateKey      = 'spotify_auth_state';
-const redirect_uri  = `http://localhost:${port}/callback`;
+const redirect_uri  = `http://localhost:${port}/api/v1/spotify-callback`;
 const client_id     = process.env.SPOTIFY_CLIENT_ID;
 const client_secret = process.env.SPOTIFY_CLIENT_SECRET;
 
@@ -30,14 +30,16 @@ app.get('/api/v1/spotify-access-token', (req, res) => {
       const token = body.access_token;
       res.status(200).send(JSON.stringify({ token }));
     } else {
-      res.status(response.statusCode).send(JSON.stringify({ error, status: response.statusCode }));
+      res
+        .status(response.statusCode)
+        .send(JSON.stringify({ error, status: response.statusCode }));
     }
   });
 });
 
 app.get('/api/v1/spotify-login', (req, res) => {
   const state = utils.generateRandomString(16);
-  const scope = 'user-read-private user-read-email';
+  const scope = 'user-read-private user-read-email playlist-read-private playlist-modify-private playlist-modify-public';
   const params = querystring.stringify({ 
     response_type: 'code', 
     client_id, scope, redirect_uri, state
@@ -67,7 +69,8 @@ app.get('/api/v1/spotify-callback', (req, res) => {
       if (!error && response.statusCode === 200) {
         const access_token = body.access_token;
         const refresh_token = body.refresh_token;
-        res.status(200).send(JSON.stringify({ access_token, refresh_token }));
+        const tokens = querystring.stringify({ access_token, refresh_token });
+        res.redirect(`http://localhost:8080/spotify-login-success?${tokens}`);
       } else {
         res.status(422).send(JSON.stringify({err: 'invalid token'}));
       }

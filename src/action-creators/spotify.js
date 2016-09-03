@@ -8,6 +8,20 @@ export function setIsAuthenticated(isAuthenticated) {
   }
 }
 
+export function setIsUserAuthenticated(isUserAuthenticated) {
+  return {
+    type: 'SET_IS_SPOTIFY_USER_AUTHENTICATED',
+    isUserAuthenticated
+  }
+}
+
+export function setUserPlaylists(playlists) {
+  return {
+    type: 'SET_SPOTIFY_USER_PLAYLISTS',
+    playlists
+  }
+}
+
 export function setIsFetchingRecs(isFetchingRecs) {
   return {
     type: 'SET_IS_FETCHING_RECS',
@@ -35,6 +49,13 @@ export function setSpotifySearchResults(spotifySearchResults) {
   }
 }
 
+export function setUser(user) {
+  return {
+    type: 'SET_USER',
+    user
+  }
+}
+
 export function setArtist(artist) {
   return {
     type: 'SET_SPOTIFY_ARTIST',
@@ -58,6 +79,7 @@ export function getAccessToken() {
   }
 }
 
+
 export function search(artist) {
   return dispatch => {
     Spotify.search({q: artist, type: 'artist'})
@@ -78,6 +100,37 @@ export function fetchRecs(params) {
   }
 }
 
+export function fetchUser() {
+  return dispatch => {
+    Spotify.fetchUser()
+      .then(payload => dispatch(setUser(payload.json)));
+  }
+}
+
+export function fetchUserAndPlaylists() {
+  return dispatch => {
+    Spotify.fetchUser()
+      .then(payload => {
+        dispatch(setUser(payload.json));
+        dispatch(fetchUserPlaylists());
+      });
+  }
+}
+
+export function fetchUserPlaylists() {
+  return dispatch => {
+    Spotify.fetchUserPlaylists()
+      .then(payload => dispatch(setUserPlaylists(payload.json)));
+  }
+}
+
+export function addTrackToPlaylist(uri, playlistId) {
+  return (dispatch, getState) => {
+    const userId = getState().spotify.getIn(['user','id']);
+    Spotify.addTrackToPlaylist(uri, userId, playlistId);
+  }
+}
+
 export default {
   getAccessToken,
   fetchRecs,
@@ -85,5 +138,10 @@ export default {
   resetSearch,
   setArtist,
   reset,
-  setIsFetchingRecs
+  setIsFetchingRecs,
+  setIsUserAuthenticated,
+  fetchUserPlaylists,
+  fetchUser,
+  fetchUserAndPlaylists,
+  addTrackToPlaylist
 }

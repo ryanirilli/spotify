@@ -1,6 +1,7 @@
 export function addAuthTokenToHeaders(options = {}) {
   options.headers = options.headers || {};
-  options.headers.authorization = `Bearer ${getLocalStorageItem('accessToken')}`;
+  const token = getLocalStorageItem('userAccessToken') || getLocalStorageItem('accessToken');
+  options.headers.authorization = `Bearer ${token}`;
   return options;
 }
 

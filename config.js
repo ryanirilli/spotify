@@ -48,6 +48,7 @@ System.config({
     "react-router-redux": "npm:react-router-redux@4.0.2",
     "redux": "npm:redux@3.5.1",
     "redux-thunk": "npm:redux-thunk@2.0.1",
+    "waypoints": "npm:waypoints@4.0.0",
     "whatwg-fetch": "npm:whatwg-fetch@1.0.0",
     "github:floatdrop/plugin-jsx@1.2.1": {
       "react-tools": "npm:react-tools@0.13.3"
@@ -721,6 +722,11 @@ System.config({
     "npm:warning@2.1.0": {
       "loose-envify": "npm:loose-envify@1.1.0",
       "process": "github:jspm/nodelibs-process@0.1.2"
+    },
+    "npm:waypoints@4.0.0": {
+      "buffer": "github:jspm/nodelibs-buffer@0.1.0",
+      "path": "github:jspm/nodelibs-path@0.1.0",
+      "systemjs-json": "github:systemjs/plugin-json@0.1.2"
     }
   }
 });
