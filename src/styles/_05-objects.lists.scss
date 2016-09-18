@@ -1,6 +1,16 @@
+.list-hover {
+  cursor: pointer;
+}
+
 .list-hover-main {
   >li:hover {
     background: rgba(0,0,0,0.2);
+  }
+}
+
+.list-hover-light {
+  >li:hover {
+    background: rgba(0, 0, 0, 0.04);
   }
 }
 

@@ -1,0 +1,8 @@
+$img-loader-duration: 500ms;
+
+.img-loader {
+  opacity: 0;
+  @include vendor(transition, opacity $img-loader-duration ease);
+}
+
+.img-loader--loaded { opacity: 1; }

@@ -24,7 +24,8 @@ function mapStateToProps(state) {
     isSpotifyUserAuthenticated: state.spotify.get('isUserAuthenticated'),
     spotifyUserPlaylists: state.spotify.get('userPlaylists'),
     spotifyArtistDetails: state.spotifyArtistDetails.get('artist'),
-    spotifyArtistAlbums: state.spotifyArtistDetails.get('albums')
+    spotifyArtistAlbums: state.spotifyArtistDetails.get('albums'),
+    spotifyAlbumDetails: state.spotifyAlbumDetails.get('album')
   };
 }
 
@@ -39,7 +40,9 @@ function mapDispatchToProps(dispatch) {
     spotifyLogin: Spotify.login,
     addSpotifyTrackToPLaylist: Spotify.addTrackToPlaylist,
     fetchSpotifyArtist: SpotifyArtistDetails.fetchArtistDetails,
-    fetchSpotifyArtistAlbums: SpotifyArtistDetails.fetchArtistAlbums
+    fetchSpotifyArtistAlbums: SpotifyArtistDetails.fetchArtistAlbums,
+    resetSpotifyArtistDetails: SpotifyArtistDetails.resetArtistDetails,
+    fetchSpotifyAlbumDetails: SpotifyArtistDetails.fetchAlbumDetails
   }, dispatch);
 }
 
@@ -130,10 +133,10 @@ export const App = React.createClass({
       </Drawer>
 
       <Waypoint offsetTop={66} reset={this.state.playlistDrawerReset}>
-        <div className="drawer-header" onClick={this.toggleSpotifyPlaylistsDrawer} onToggleCallback={this.onPlaylistDrawerToggle}>
+        <div className="drawer-header" onClick={this.toggleSpotifyPlaylistsDrawer}>
           My playlists
         </div>
-        <Drawer isOpen={this.state.isSpotifyPlaylistsDrawerOpen}>
+        <Drawer isOpen={this.state.isSpotifyPlaylistsDrawerOpen} onToggleCallback={this.onPlaylistDrawerToggle}>
           {this.props.isSpotifyUserAuthenticated ? this.renderUserPlaylists() : this.renderSpotifyLoginButton()}
         </Drawer>
       </Waypoint>

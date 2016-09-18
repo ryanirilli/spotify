@@ -3,7 +3,7 @@ import { renderIntoDocument } from 'react-addons-test-utils';
 import { App } from './../src/components/App.jsx!'
 
 function createComponent(props = {}) {
-  return renderIntoDocument( <App />);
+  return renderIntoDocument( <App prop1={props.prop1} />);
 }
 
 context('App', () => {

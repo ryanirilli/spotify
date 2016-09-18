@@ -23,6 +23,9 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.icon-folder-music:before {
+  content: "\e902";
+}
 .icon-dots-three-horizontal:before {
   content: "\e900";
 }

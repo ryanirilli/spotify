@@ -11,6 +11,8 @@ export default function(state = initialState, action = {}) {
       return state.set('artist', fromJS(action.artist));
     case 'SET_SPOTIFY_ARTIST_ALBUMS':
       return state.set('albums', fromJS(action.albums));
+    case 'RESET_SPOTIFY_ARTIST_DETAILS':
+      return initialState;
     default:
       return state;
   }

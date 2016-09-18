@@ -1,0 +1,19 @@
+.master-detail {
+  display: flex;
+  align-content: stretch;
+  flex-direction: row;
+}
+.master-detail__sidebar {
+  background: white;
+  flex: 1;
+}
+.master-detail__body {
+  background: #f1f1f1;
+  box-shadow: 0 0 5px rgba(0,0,0,0.4);
+  flex: 2;
+}
+
+.master-detail__sidebar,
+.master-detail__body {
+  min-height: 500px;
+}

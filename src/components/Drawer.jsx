@@ -6,12 +6,13 @@ export default React.createClass({
   getInitialState() {
     return {
       id: `drawer__body-${generateGuid()}`,
-      height: null
+      height: null,
+      shouldAnimateInitialOpen: false,
     };
   },
 
   propTypes: {
-    isOpen: React.PropTypes.bool,
+    isOpen: React.PropTypes.bool.isRequired,
     afterOpenClass: React.PropTypes.string,
     onToggleCallback: React.PropTypes.func
   },
@@ -19,9 +20,13 @@ export default React.createClass({
   componentDidMount() {
     this.refs.drawer.addEventListener('transitionend', this.onTransitionEnd);
     if (this.props.isOpen) {
-      this.onTransitionEnd();
-      this.updateClassList(true);
-      this.setState({height: this.getHeight()});
+      if(this.props.shouldAnimateInitialOpen) {
+        this.setState({ shouldAnimateInitialOpen: true });
+      } else {
+        this.onTransitionEnd();
+        this.updateClassList(true);
+        this.setState({height: this.getHeight()});
+      }
     }
   },
 
@@ -29,10 +34,16 @@ export default React.createClass({
     this.refs.drawer.removeEventListener('transitionend', this.onTransitionEnd);
   },
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps, prevState) {
     const {isOpen} = this.props;
     const wasOpen = prevProps.isOpen;
-    if (isOpen !== wasOpen) {
+    const shouldToggle = isOpen !== wasOpen;
+
+    const prevShouldAnimateInitialOpen = prevState.shouldAnimateInitialOpen;
+    const {shouldAnimateInitialOpen} = this.state;
+    const shouldAnimateInitial = prevShouldAnimateInitialOpen !== shouldAnimateInitialOpen;
+
+    if (shouldToggle || shouldAnimateInitial) {
       this.setState({height: this.getHeight()});
       setTimeout(() => this.updateClassList(isOpen));
     }

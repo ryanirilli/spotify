@@ -33,16 +33,14 @@ $spotify-details-transition-duration: 500ms;
   background: $spotify-track-progress-bg;
 }
 
-.spotify-track__details,
-.spotify-track__img {
+.spotify-track__details {
   display: block;
   opacity: 0;
   @include vendor(transition, opacity $spotify-details-transition-duration ease);
 }
 
 .spotify-track:hover .spotify-track__details,
-.spotify-track:hover .spotify-track__more,
-.spotify-track__img--loaded{
+.spotify-track:hover .spotify-track__more {
   opacity: 1;
 }
 

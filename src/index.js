@@ -8,15 +8,18 @@ import thunk from 'redux-thunk';
 import 'whatwg-fetch';
 import {AppContainer} from 'src/components/App.jsx!';
 import SpotifyLoginSuccess from 'src/components/SpotifyLoginSuccess.jsx!';
+
 import spotify from 'src/reducers/spotify';
 import spotifyArtistDetails from 'src/reducers/spotify-artist-details';
+import spotifyAlbumDetails from 'src/reducers/spotify-album-details';
+
 import logger from 'src/middlewares/logger';
 import { setIsUserAuthenticated, fetchUserAndPlaylists } from 'src/action-creators/spotify';
 import { setLocalStorageItem } from 'src/api/httpUtils';
 import 'waypoints';
 
 const routingMiddleware = routerMiddleware(browserHistory);
-const reducers = {routing: routerReducer, spotify, spotifyArtistDetails};
+const reducers = {routing: routerReducer, spotify, spotifyArtistDetails, spotifyAlbumDetails};
 const store = createStore(combineReducers(reducers), applyMiddleware(logger, thunk, routingMiddleware));
 const history = syncHistoryWithStore(browserHistory, store);
 

@@ -22,27 +22,27 @@ export function search(opts) {
 }
 
 export function fetchUserPlaylists() {
-  return request(`https://api.spotify.com/v1/me/playlists`);
+  return request(`${baseUrl}/me/playlists`);
 }
 
 export function fetchUser() {
-  return request('https://api.spotify.com/v1/me')
+  return request(`${baseUrl}/me`)
 }
 
 export function addTrackToPlaylist(uri, userId, playlistId) {
-  return request(`https://api.spotify.com/v1/users/${userId}/playlists/${playlistId}/tracks?uris=${uri}`, {method: 'post'});
+  return request(`${baseUrl}/users/${userId}/playlists/${playlistId}/tracks?uris=${uri}`, {method: 'post'});
 }
 
 export function fetchArtist(artistId) {
-  return request(`https://api.spotify.com/v1/artists/${artistId}`);
+  return request(`${baseUrl}/artists/${artistId}`);
 }
 
 export function fetchArtistAlbums(artistId) {
-  return request(`https://api.spotify.com/v1/artists/${artistId}/albums`);
+  return request(`${baseUrl}/artists/${artistId}/albums`);
 }
 
 export function fetchAlbumDetails(albumId) {
-  return request(`https://api.spotify.com/v1/albums/${albumId}`);
+  return request(`${baseUrl}/albums/${albumId}`);
 }
 
 export default {

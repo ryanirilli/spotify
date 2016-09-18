@@ -1,6 +1,7 @@
 import React from 'react';
 import { List } from 'immutable';
 import { debounce } from './../utils/utils';
+import keycodes from './../constants/keycodes';
 
 export default React.createClass({
 
@@ -80,16 +81,16 @@ export default React.createClass({
   onKeydown(event) {
     const { keyCode } = event;
     switch(keyCode) {
-      case 27: //esc
+      case keycodes.ESCAPE:
         this.hideResults();
         break;
-      case 38: //arrow up
+      case keycodes.UP:
         this.setCurrentActiveIndex('up');
         break;
-      case 40: //arrow down
+      case keycodes.DOWN:
         this.setCurrentActiveIndex('down');
         break;
-      case 13: //Enter
+      case keycodes.ENTER:
         this.setSelection();
         break;
     }

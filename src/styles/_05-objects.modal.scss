@@ -10,19 +10,21 @@
   z-index: 1;
   overflow-y: scroll;
 }
-
 .modal__content {
   width: 600px;
-  min-height: 500px;
-  background: white;
   position: relative;
+  align-self: stretch;
+  margin: 55px 0;
 }
-
 .modal__mask {
-  position: absolute;
+  position: fixed;
   background: rgba(0, 0, 0, 0.55);
   width: 100%;
   height: 100%;
   top: 0;
   left: 0;
+}
+
+.modal__bottom-spacer {
+  height: 100px;
 }

@@ -14,10 +14,16 @@ export function setArtistAlbums(albums) {
   }
 }
 
-export function addAlbum(album) {
+export function setAlbum(album) {
   return {
-    type: 'ADD_SPOTIFY_ALBUM',
+    type: 'SET_SPOTIFY_ALBUM',
     album
+  }
+}
+
+export function resetArtistDetails() {
+  return {
+    type: 'RESET_SPOTIFY_ARTIST_DETAILS',
   }
 }
 
@@ -38,12 +44,13 @@ export function fetchArtistAlbums(artistId) {
 export function fetchAlbumDetails(albumId) {
   return dispatch => {
     Spotify.fetchAlbumDetails(albumId)
-      .then(payload => dispatch(addAlbum(payload.json)));
+      .then(payload => dispatch(setAlbum(payload.json)));
   }
 }
 
 export default {
   fetchArtistDetails,
   fetchArtistAlbums,
-  fetchAlbumDetails
+  fetchAlbumDetails,
+  resetArtistDetails
 }
