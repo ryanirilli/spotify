@@ -27,6 +27,6 @@ export default React.createClass({
   },
 
   render() {
-    return <img ref="_img" className={`img-loader ${this.props.className || 'u-1/1'}`}/>
+    return <img ref="_img" className={`block img-loader ${this.props.className || 'u-1/1'}`}/>
   }
 });

@@ -131,11 +131,19 @@ export function addTrackToPlaylist(uri, playlistId) {
   }
 }
 
+export function fetchArtist(artistId) {
+  return dispatch => {
+    Spotify.fetchArtist(artistId)
+      .then(payload => dispatch(setArtist(payload.json)));
+  }
+}
+
 export default {
   getAccessToken,
   fetchRecs,
   search,
   resetSearch,
+  fetchArtist,
   setArtist,
   reset,
   setIsFetchingRecs,

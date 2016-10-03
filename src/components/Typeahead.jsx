@@ -16,7 +16,7 @@ export default React.createClass({
 
   getInitialState() {
     return {
-      isShowingResults: true,
+      isShowingResults: false,
       curActiveIndex: null,
       input: '',
       fetchData: debounce(this.fetchData, 250)

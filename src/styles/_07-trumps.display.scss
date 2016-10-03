@@ -1,3 +1,7 @@
+.block {
+  display: block;
+}
+
 .ib {
   display: inline-block;
 }
@@ -8,6 +12,10 @@
   left: 0;
   width: 100%;
   z-index: 1;
+}
+
+.center {
+  margin: 0 auto;
 }
 
 .float-right {

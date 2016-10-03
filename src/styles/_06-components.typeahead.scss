@@ -1,7 +1,7 @@
-$typeahead-main-bg: #333745 !default;
-$typeahead-main-color: #77C4D3 !default;
-$typeahead-border-radius: 4px 4px 0 0 !default;
-$typeahead-border-color: #727b9c !default;
+$typeahead-main-bg: transparent !default;
+$typeahead-main-color: white !default;
+$typeahead-border-radius: 0 !default;
+$typeahead-border-color: white !default;
 
 
 .typeahead {
@@ -13,11 +13,11 @@ $typeahead-border-color: #727b9c !default;
   top: 100%;
   z-index: 1;
   width: 100%;
-  max-height: 75vh;
+  max-height: 200px;
   overflow-y: scroll;
   border-top: none;
   @include media-query(palm) {
-    max-height: 50vh;
+    max-height: 200px;
   }
 }
 
@@ -45,6 +45,7 @@ $typeahead-border-color: #727b9c !default;
     color: $typeahead-main-color;
     outline: none !important;
     border-radius: $typeahead-border-radius;
+    @include placeholder-color(white);
   }
 
   .typeahead__results {

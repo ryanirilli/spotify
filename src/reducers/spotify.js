@@ -28,7 +28,7 @@ export default function(state = initialState, action = {}) {
     case 'RESET_SPOTIFY_SEARCH':
       return state.set('searchResults', initialState.get('searchResults'));
     case 'SET_SPOTIFY_ARTIST':
-      return state.set('artist', action.artist);
+      return state.set('artist', fromJS(action.artist));
     case 'RESET_SPOTIFY':
       return initialState.merge({
         isAuthenticated: state.get('isAuthenticated'),

@@ -1,5 +1,5 @@
 $rangeslider-handle-size-desk:     20px;
-$rangeslider-handle-size-palm:     40px;
+$rangeslider-handle-size-palm:     20px;
 $rangeslider-height:               26px;
 $range-slider-fill-color:          green    !default;
 $range-slider-bg-color:            blue     !default;
@@ -39,7 +39,6 @@ $range-slider-handle-border-color: purple   !default;
   cursor: pointer;
   display: inline-block;
   position: absolute;
-  box-shadow: 0 0 3px rgba(0,0,0,0.4);
   width: $rangeslider-handle-size-desk;
   height: $rangeslider-handle-size-desk;
   top: 2px;
@@ -56,6 +55,7 @@ $range-slider-handle-border-color: purple   !default;
     cursor: -webkit-grabbing;
   }
   @include media-query(palm) {
+    top: 3px;
     width: $rangeslider-handle-size-palm,;
     height: $rangeslider-handle-size-palm;
     border-radius: $rangeslider-handle-size-palm/2;

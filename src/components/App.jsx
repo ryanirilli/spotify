@@ -9,7 +9,7 @@ import SpotifyArtistDetails from './../action-creators/spotify-artist-details';
 import Drawer from './Drawer.jsx!';
 import RangeSlider from './RangeSlider.jsx!';
 import SpotifyTrack from './SpotifyTrack.jsx!';
-import Typeahead from './Typeahead.jsx!';
+import TypeaheadSpotify from './TypeaheadSpotify.jsx!';
 import Waypoint from './Waypoint.jsx!';
 
 import {List, Map} from 'immutable';
@@ -35,6 +35,7 @@ function mapDispatchToProps(dispatch) {
     fetchSpotfyRecs: Spotify.fetchRecs,
     spotifySearch: Spotify.search,
     resetSpotifySearch: Spotify.resetSearch,
+    fetchCurrentSpotifyArtist: Spotify.fetchArtist,
     setSpotifyArtist: Spotify.setArtist,
     resetSpotify: Spotify.reset,
     spotifyLogin: Spotify.login,
@@ -61,10 +62,6 @@ const spotifyPropertyPrefix = 'target'; //min or target
 
 export const App = React.createClass({
 
-  componentWillMount() {
-    this.props.getSpotifyAccessToken();
-  },
-
   getInitialState() {
     const sliderValues = {};
     sliders.forEach(slider => sliderValues[`${spotifyPropertyPrefix}_${slider}`] = 0);
@@ -77,8 +74,16 @@ export const App = React.createClass({
     };
   },
 
+  componentWillMount() {
+    const {artistId} = this.props.location.query;
+    if(artistId) {
+      this.fetchRecs(artistId);
+      this.props.fetchCurrentSpotifyArtist(artistId);
+    }
+  },
+
   render() {
-    if (!this.props.isSpotifyAuthenticated) {
+    if(!this.props.spotifySelectedArtist.size) {
       return null;
     }
 
@@ -86,13 +91,13 @@ export const App = React.createClass({
 
       {this.props.isFetchingSpotifyRecs ? this.renderLoading() : null}
 
-      <div className="fixed-top bg-black">
-        <div className="section-main u-ph-">
+      <div className="fixed-top bg-gradient-blue">
+        <div className="section-main u-ph- u-pb">
           {this.renderSearch()}
         </div>
       </div>
 
-      <div className="u-pt+">
+      <div className="u-pt++">
         {this.props.spotifyRecs.size ? this.renderSpotifyRecs() : this.renderInitialScreen()}
       </div>
     </div>
@@ -109,10 +114,10 @@ export const App = React.createClass({
   renderSpotifyRecs() {
     return <div className="section-main u-ph-">
       <div className="layout">
-        <div className="layout__item u-1/4">
+        <div className="layout__item u-1/4 u-1/1-palm">
           {this.renderSidebar()}
         </div>
-        <div className="layout__item u-3/4">
+        <div className="layout__item u-3/4 u-1/1-palm">
           {this.renderTracks()}
         </div>
       </div>
@@ -183,7 +188,7 @@ export const App = React.createClass({
   },
 
   renderTrack(track) {
-    return <div key={track.get('id')} className="layout__item u-1/5 u-1/1-palm">
+    return <div key={track.get('id')} className="layout__item u-1/5 u-1/3-palm">
       <div className="u-mb">
         <SpotifyTrack {...this.props} track={track}/>
       </div>
@@ -191,42 +196,14 @@ export const App = React.createClass({
   },
 
   renderSearch() {
-    return <div className="search u-pt palm-pt-">
-      <Typeahead placeholder="Artist search"
-                 fetchData={this.searchSpotifyArtist}
-                 results={this.props.spotifySearchResults}
-                 renderResult={this.renderSpotifySearchResult}
-                 onSelect={this.handleArtistSelect}
-                 selectedValueLabel="name"/>
+    return <div className="search u-pt palm-pt- palm-pb-">
+      <TypeaheadSpotify getSpotifyAccessToken={this.props.getSpotifyAccessToken}
+                        isSpotifyAuthenticated={this.props.isSpotifyAuthenticated}
+                        spotifySearch={this.props.spotifySearch}
+                        resetSpotifySearch={this.props.resetSpotifySearch}
+                        spotifySearchResults={this.props.spotifySearchResults}
+                        handleArtistSelect={this.handleArtistSelect}/>
     </div>
-  },
-
-  renderSpotifySearchResult(result, i) {
-    const images = result.get('images') || List();
-    const thumb = images.last() || Map();
-    return <div className={`slide-down-${i}`}>
-      <div className="media media--small u-mv-- u-pl--">
-        {this.renderSpotifySearchResultImg(thumb.get('url'))}
-        <div className="media__body">
-          <p className="u-mt0">
-            {result.get('name')}
-          </p>
-        </div>
-      </div>
-    </div>
-  },
-
-  renderSpotifySearchResultImg(url) {
-    const commonClasses = "media__img u-50px";
-    const style = {
-      background: 'rgba(255, 255, 255, 0.1)',
-      height: '50px'
-    };
-    if (url) {
-      return <img src={url} className={commonClasses}/>
-    } else {
-      return <div className={commonClasses} style={style}/>
-    }
   },
 
   renderSliders() {

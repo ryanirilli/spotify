@@ -1,18 +1,18 @@
 $dark-grey: #333745;
 $dark-grey-contrast-dark: #232731;
 $dark-grey-contrast-light: #727680;
-$blue: #77C4D3;
+$blue: #4096ee;
 $green: #38bf83;
 
-$main-bg: $dark-grey;
+$main-bg: white;
 $main-color: $dark-grey-contrast-light;
 
-$typeahead-main-bg: $dark-grey-contrast-dark;
-$typeahead-main-color: $blue;
-$typeahead-border-color: transparent;
+$typeahead-main-bg: $blue;
+$typeahead-main-color: white;
+$typeahead-border-color: white;
 
-$range-slider-fill-color:          red;
-$range-slider-bg-color:            $dark-grey-contrast-dark;
+$range-slider-fill-color:          $blue;
+$range-slider-bg-color:            rgba(35, 39, 49, 0.05);
 $range-slider-handle-bg-color:     $blue;
 $range-slider-handle-border-color: transparent;
 

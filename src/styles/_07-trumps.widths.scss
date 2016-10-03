@@ -3,4 +3,11 @@
   .u-#{$val}px {
     width: #{$val}px;
   }
+  .u-max-#{$val}px {
+    max-width: #{$val}px;
+  }
+}
+
+.page-height {
+  min-height: 100vh;
 }
