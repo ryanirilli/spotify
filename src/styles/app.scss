@@ -3,6 +3,7 @@
 @import "01-settings.inuit-spacing";
 @import "01-settings.inuit-layout";
 @import "01-settings.inuit-media";
+@import "01-settings.inuit-widths";
 @import "01-settings.colors";
 
 @import "jspm:inuit-defaults/settings.defaults";
@@ -50,3 +51,8 @@
 @import "07-trumps.display";
 @import "07-trumps.text";
 @import "07-trumps.widths";
+
+.logo-outlined {
+  background: rgba(0, 0, 0, 0.07);
+  border-radius: 5px;
+}

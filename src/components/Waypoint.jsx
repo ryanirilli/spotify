@@ -28,8 +28,19 @@ export default React.createClass({
     this.destroyWaypoint();
   },
 
-  setWaypoint() {
+  componentWillReceiveProps(nextProps) {
+    if(nextProps.isDisabled !== this.props.isDisabled) {
+      this.setWaypoint(nextProps.isDisabled);
+    }
+  },
+
+  setWaypoint(isDisabled = this.props.isDisabled) {
     this.destroyWaypoint();
+
+    if(isDisabled) {
+      return;
+    }
+
     const _waypoint = new window.Waypoint({
       element: this.refs.waypoint,
       offset: this.props.offsetTop,
@@ -51,11 +62,6 @@ export default React.createClass({
 
   handleWaypoint(direction) {
     const { waypoint } = this.refs;
-
-    if(!waypoint) {
-      debugger;
-    }
-
     const isFixed = direction === 'down';
     const shimHeight = isFixed ? waypoint.clientHeight : 0;
     const offsetTop = isFixed ? waypoint.offsetTop : 0;

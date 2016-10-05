@@ -39,8 +39,6 @@ export const Home = React.createClass({
         <object className="block" type="image/svg+xml" data="/static/img/logo.svg" width="65"></object>
       </div>
 
-      <UnsplashPhoto />
-
       <div className="bg-gradient-blue u-p- u-pb+">
         <div className="u-max-400px center">
           <h2>Enter your favorite artist</h2>
@@ -52,6 +50,10 @@ export const Home = React.createClass({
                             handleArtistSelect={this.handleArtistSelect}/>
         </div>
       </div>
+
+      <UnsplashPhoto />
+
+
     </div>
   }
 });

@@ -58,8 +58,8 @@ export default React.createClass({
 
   renderTrackArtistAndName() {
     const {track} = this.props;
-    return <div className="u-pl-">
-      <h3 className="u-m0">
+    return <div>
+      <h3 className="u-m0 spotify-track__title text-truncate">
         {track.getIn(['artists', 0, 'name'])}
       </h3>
       <div className="text-truncate">

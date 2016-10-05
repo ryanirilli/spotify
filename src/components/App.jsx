@@ -16,6 +16,7 @@ import {List, Map} from 'immutable';
 
 function mapStateToProps(state) {
   return {
+    device: state.app.get('device'),
     isSpotifyAuthenticated: state.spotify.get('isAuthenticated'),
     spotifyRecs: state.spotify.get('recs'),
     spotifySearchResults: state.spotify.get('searchResults'),
@@ -92,7 +93,7 @@ export const App = React.createClass({
       {this.props.isFetchingSpotifyRecs ? this.renderLoading() : null}
 
       <div className="fixed-top bg-gradient-blue">
-        <div className="section-main u-ph- u-pb">
+        <div className="section-main u-ph- u-pb-">
           {this.renderSearch()}
         </div>
       </div>
@@ -137,7 +138,7 @@ export const App = React.createClass({
         {this.renderSliders()}
       </Drawer>
 
-      <Waypoint offsetTop={66} reset={this.state.playlistDrawerReset}>
+      <Waypoint offsetTop={80} reset={this.state.playlistDrawerReset} isDisabled={this.props.device !== 'desk'}>
         <div className="drawer-header" onClick={this.toggleSpotifyPlaylistsDrawer}>
           My playlists
         </div>
@@ -197,12 +198,21 @@ export const App = React.createClass({
 
   renderSearch() {
     return <div className="search u-pt palm-pt- palm-pb-">
-      <TypeaheadSpotify getSpotifyAccessToken={this.props.getSpotifyAccessToken}
-                        isSpotifyAuthenticated={this.props.isSpotifyAuthenticated}
-                        spotifySearch={this.props.spotifySearch}
-                        resetSpotifySearch={this.props.resetSpotifySearch}
-                        spotifySearchResults={this.props.spotifySearchResults}
-                        handleArtistSelect={this.handleArtistSelect}/>
+      <div className="layout">
+        <div className="layout__item u-1/6">
+          <div className="text-center">
+            <object className="logo-outlined block" type="image/svg+xml" data="/static/img/logo-white.svg" width="92"></object>
+          </div>
+        </div>
+        <div className="layout__item u-5/6">
+          <TypeaheadSpotify getSpotifyAccessToken={this.props.getSpotifyAccessToken}
+                            isSpotifyAuthenticated={this.props.isSpotifyAuthenticated}
+                            spotifySearch={this.props.spotifySearch}
+                            resetSpotifySearch={this.props.resetSpotifySearch}
+                            spotifySearchResults={this.props.spotifySearchResults}
+                            handleArtistSelect={this.handleArtistSelect}/>
+        </div>
+      </div>
     </div>
   },
 
