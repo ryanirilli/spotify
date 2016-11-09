@@ -11,7 +11,7 @@
   top: 0;
   left: 0;
   width: 100%;
-  z-index: 1;
+  z-index: 999;
 }
 
 .center {
@@ -45,5 +45,4 @@
 .droppable--hover {
   border-color: $droppable-border-color;
   color: $droppable-border-color;
-  background: rgba(0, 0, 0, 0.19);
 }

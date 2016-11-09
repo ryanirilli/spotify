@@ -1,4 +1,5 @@
 import React from 'react';
+import {replace} from 'react-router-redux';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import {debounce} from './../utils/utils';
@@ -11,6 +12,8 @@ import RangeSlider from './RangeSlider.jsx!';
 import SpotifyTrack from './SpotifyTrack.jsx!';
 import TypeaheadSpotify from './TypeaheadSpotify.jsx!';
 import Waypoint from './Waypoint.jsx!';
+import Modal from './Modal.jsx!';
+import ImgLoader from './ImgLoader.jsx!';
 
 import {List, Map} from 'immutable';
 
@@ -32,6 +35,7 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({
+    replace,
     getSpotifyAccessToken: Spotify.getAccessToken,
     fetchSpotfyRecs: Spotify.fetchRecs,
     spotifySearch: Spotify.search,
@@ -71,23 +75,42 @@ export const App = React.createClass({
       debouncedFetchRecs: debounce(this.fetchRecs, 1000),
       isSpotifySlidersDrawerOpen: true,
       isSpotifyPlaylistsDrawerOpen: true,
-      playlistDrawerReset: 0
+      playlistDrawerReset: 0,
+      isShowingTrackDetails: false
     };
   },
 
   componentWillMount() {
-    const {artistId} = this.props.location.query;
+    if(!this.props.isSpotifyAuthenticated) {
+      this.props.getSpotifyAccessToken();
+    } else {
+      this.loadInitialState();
+    }
+  },
+
+  componentWillReceiveProps(nextProps) {
+    if(nextProps.isSpotifyAuthenticated && !this.props.isSpotifyAuthenticated) {
+      this.loadInitialState(nextProps.location.query);
+    }
+  },
+
+  loadInitialState(query = this.props.location.query) {
+    const {artistId, detailsArtistId} = query;
+
     if(artistId) {
       this.fetchRecs(artistId);
       this.props.fetchCurrentSpotifyArtist(artistId);
     }
+
+    if(detailsArtistId) {
+      this.openTrackDetails(detailsArtistId);
+    }
   },
 
   render() {
-    if(!this.props.spotifySelectedArtist.size) {
+    if(!this.props.spotifySelectedArtist.size || !this.props.isSpotifyAuthenticated) {
       return null;
     }
-
     return <div className="app-container">
 
       {this.props.isFetchingSpotifyRecs ? this.renderLoading() : null}
@@ -98,9 +121,12 @@ export const App = React.createClass({
         </div>
       </div>
 
-      <div className="u-pt++">
+      <div className="u-pt++ palm-pt+">
         {this.props.spotifyRecs.size ? this.renderSpotifyRecs() : this.renderInitialScreen()}
       </div>
+
+      {this.state.isShowingTrackDetails ? this.renderTrackDetails() : null}
+
     </div>
   },
 
@@ -113,11 +139,14 @@ export const App = React.createClass({
   },
 
   renderSpotifyRecs() {
+    const isPalm = this.props.device === 'palm';
     return <div className="section-main u-ph-">
       <div className="layout">
-        <div className="layout__item u-1/4 u-1/1-palm">
+
+        {!isPalm ? <div className="layout__item u-1/4 u-1/1-palm">
           {this.renderSidebar()}
-        </div>
+        </div> : null}
+
         <div className="layout__item u-3/4 u-1/1-palm">
           {this.renderTracks()}
         </div>
@@ -155,7 +184,7 @@ export const App = React.createClass({
         Drag and drop tracks directly to your playlists. You need to connect to Spotify to enable this feature.
       </p>,
       <button key="1" className="btn btn--small btn--pill u-1/1" onClick={() => window.open("/api/v1/spotify-login") }>
-        <i className="icon-spotify"/> Spotify login
+        <i className="icon-spotify"/> Spotify connect
       </button>
     ]
   },
@@ -183,7 +212,8 @@ export const App = React.createClass({
   },
 
   renderTracks() {
-    return <div className="spotify-tracks layout u-mt">
+    const isPalm = this.props.device === 'palm';
+    return <div className={`spotify-tracks layout ${isPalm ? 'layout--small' : ''} u-mt`}>
       {this.props.spotifyRecs.get('tracks').map(track => this.renderTrack(track))}
     </div>
   },
@@ -191,21 +221,82 @@ export const App = React.createClass({
   renderTrack(track) {
     return <div key={track.get('id')} className="layout__item u-1/5 u-1/3-palm">
       <div className="u-mb">
-        <SpotifyTrack {...this.props} track={track}/>
+        <SpotifyTrack {...this.props} track={track} onTrackClick={this.openTrackDetails}/>
       </div>
     </div>
   },
 
+  openTrackDetails(artistId) {
+    this.setState({isShowingTrackDetails: true});
+    this.props.fetchSpotifyArtist(artistId);
+    this.props.fetchSpotifyArtistAlbums(artistId);
+  },
+
+  closeTrackDetails() {
+    const query = {...this.props.location.query};
+    delete query.detailsArtistId;
+    this.setState({ isShowingTrackDetails: false});
+    this.props.resetSpotifyArtistDetails();
+    this.props.replace({
+      ...this.props.location,
+      query
+    });
+  },
+
+  renderTrackDetails() {
+    const {spotifyArtistDetails, spotifyArtistAlbums} = this.props;
+    const artistImg = spotifyArtistDetails.getIn(['images', 0, 'url']);
+    const albums = spotifyArtistAlbums.get('items') || [];
+    return <Modal onClose={this.closeTrackDetails}>
+      <div className="master-detail">
+        <div className="master-detail__sidebar">
+          {artistImg ? <ImgLoader className="u-250px" src={artistImg}/> : null}
+        </div>
+        <div className="master-detail__body u-p">
+          <ul className="list-bare list-hover list-hover-light">
+            {albums.map(album => this.renderAlbum(album))}
+          </ul>
+        </div>
+      </div>
+    </Modal>
+  },
+
+  renderAlbum(album) {
+    const id = album.get('id');
+    const {spotifyAlbumDetails} = this.props;
+    const isActiveAlbum = spotifyAlbumDetails.get('id') === id;
+    const tracks = spotifyAlbumDetails.getIn(['tracks', 'items']) || [];
+    return <li onClick={e => this.loadAlbum(id)} key={id}
+               className="text-truncate u-pt--">
+      <span className="icon-folder-music u-mr--"></span> {album.get('name')}
+      {isActiveAlbum && tracks.size && this.renderAlbumTracks(tracks)}
+    </li>
+  },
+
+  renderAlbumTracks(tracks) {
+    return <Drawer isOpen={true} shouldAnimateInitialOpen={true}>
+      <ul>
+        {tracks.map(track => <li key={track.get('id')}>
+          {track.get('name')}
+          <audio className="spotify-track__preview"
+                 ref={`${track.get('id')}-preview`}
+                 src={track.get('preview_url')}/>
+        </li>)}
+      </ul>
+    </Drawer>
+  },
+
   renderSearch() {
-    return <div className="search u-pt palm-pt- palm-pb-">
-      <div className="layout">
+    return <div className="search u-pt palm-pt-">
+      <div className="layout layout--flush">
         <div className="layout__item u-1/6">
-          <div className="text-center">
-            <object className="logo-outlined block" type="image/svg+xml" data="/static/img/logo-white.svg" width="92"></object>
+          <div className="text-center u-pr--">
+            <object className="logo-outlined block u-1/1" type="image/svg+xml" data="/static/img/logo-white.svg"></object>
           </div>
         </div>
         <div className="layout__item u-5/6">
           <TypeaheadSpotify getSpotifyAccessToken={this.props.getSpotifyAccessToken}
+                            device={this.props.device}
                             isSpotifyAuthenticated={this.props.isSpotifyAuthenticated}
                             spotifySearch={this.props.spotifySearch}
                             resetSpotifySearch={this.props.resetSpotifySearch}

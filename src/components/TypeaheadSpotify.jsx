@@ -3,6 +3,7 @@ import Typeahead from './Typeahead.jsx!';
 import {List, Map} from 'immutable';
 
 export default React.createClass({
+
   componentWillMount() {
     this.props.getSpotifyAccessToken();
   },
@@ -16,7 +17,8 @@ export default React.createClass({
   },
 
   render() {
-    return <Typeahead placeholder="Artist search"
+    return <Typeahead device={this.props.device}
+                      placeholder="Artist search"
                       fetchData={this.searchSpotifyArtist}
                       results={this.props.spotifySearchResults}
                       renderResult={this.renderSpotifySearchResult}
@@ -42,7 +44,7 @@ export default React.createClass({
   renderSpotifySearchResultImg(url) {
     const commonClasses = "media__img u-50px";
     const style = {
-      background: 'rgba(255, 255, 255, 0.1)',
+      background: 'rgba(0, 0, 0, 0.05)',
       height: '50px'
     };
     if (url) {

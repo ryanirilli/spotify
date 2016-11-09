@@ -7,6 +7,7 @@ export default React.createClass({
 
   getDefaultProps() {
     return {
+      device: '',
       results: List(),
       fetchData: function() {},
       renderResult: function() {},
@@ -19,21 +20,33 @@ export default React.createClass({
       isShowingResults: false,
       curActiveIndex: null,
       input: '',
-      fetchData: debounce(this.fetchData, 250)
+      fetchData: debounce(this.fetchData, 250),
+      isPalmFocused: false
+    }
+  },
+
+  onFocus() {
+    const {device} = this.props;
+    switch (device) {
+      case 'palm': {
+        this.setState({isPalmFocused: true});
+      }
     }
   },
 
   render() {
     const shouldShowResults = this.props.results.size && this.state.isShowingResults;
+    const {isPalmFocused} = this.state;
     return <div ref="typeahead"
-                className={`typeahead typeahead--${this.props.theme || 'main'} ${shouldShowResults ? 'typeahead--has-results' : ''}`}
+                className={`typeahead typeahead--${this.props.theme || 'main'} ${shouldShowResults ? 'typeahead--has-results' : ''} ${isPalmFocused ? 'typeahead--palm-focused' : ''}`}
                 onKeyDown={this.onKeydown}>
       <input className="typeahead__input u-1/1"
              placeholder={this.props.placeholder}
              type="text"
              value={this.state.input}
              onChange={this.handleInput}
-             onClick={this.showResults} />
+             onClick={this.showResults}
+             onFocus={this.onFocus} />
       {shouldShowResults ? this.renderResults() : null}
     </div>
   },

@@ -6,8 +6,8 @@
   display: flex;
   justify-content: center; /* horizontal for default flow*/
   align-items: center; /* vertical for default flow */
-  background: rgba(black, 0.5);
-  z-index: 1;
+  background: rgba(0,0,0, 0.5);
+  z-index: 9999;
   overflow-y: scroll;
 }
 .modal__content {
@@ -27,4 +27,24 @@
 
 .modal__bottom-spacer {
   height: 100px;
+}
+
+.modal-palm {
+  @extend .modal;
+}
+
+.modal-palm__content {
+  @extend .modal__content;
+  background: white;
+  margin: 30px 0;
+  width: 85%;
+  display: table;
+}
+
+.modal-palm__close {
+  @extend .clearfix;
+  .icon-close {
+    font-size: 22px;
+    float: right;
+  }
 }

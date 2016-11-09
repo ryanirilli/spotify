@@ -23,11 +23,11 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-.icon-folder-music:before {
-  content: "\e902";
+.icon-pause:before {
+  content: "\e904";
 }
-.icon-dots-three-horizontal:before {
-  content: "\e900";
+.icon-play:before {
+  content: "\e905";
 }
 .icon-spotify:before {
   content: "\e901";
@@ -37,5 +37,14 @@
 }
 .icon-social:before {
   content: "\e901";
+}
+.icon-close:before {
+  content: "\e903";
+}
+.icon-folder-music:before {
+  content: "\e902";
+}
+.icon-dots-three-horizontal:before {
+  content: "\e900";
 }
 

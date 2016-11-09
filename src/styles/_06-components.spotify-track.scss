@@ -18,9 +18,7 @@ $spotify-details-transition-duration: 500ms;
 }
 
 .spotify-track__progress {
-  height: 5px;
-  width: 100%;
-  background: rgba(black, 0.5);
+  @extend .progress-bar;
   position: absolute;
   bottom: -30px;
   z-index: 1;
@@ -28,25 +26,19 @@ $spotify-details-transition-duration: 500ms;
 }
 
 .spotify-track__progress-bar {
-  position: absolute;
-  height: 100%;
-  background: $spotify-track-progress-bg;
-}
-
-.spotify-track__details {
-
+  @extend .progress-bar__progress;
 }
 
 .spotify-track__title {
-  line-height: 0.8;
+  line-height: 1.3;
+  margin-bottom: -3px;
+  position: relative;
 }
 
 .spotify-track__details {
   display: block;
-  opacity: 0;
   @include vendor(transition, opacity $spotify-details-transition-duration ease);
   background: white;
-  position: absolute;
   top: 0;
   left: 0;
   width: 100%;
@@ -74,4 +66,18 @@ $spotify-details-transition-duration: 500ms;
   line-height: 0;
   border-radius: 10px;
   cursor: pointer;
+}
+
+.spotify-track-preview-palm__player-icon {
+  font-size: 25px;
+  position: relative;
+  top: 5px;
+  left: 5px;
+}
+
+.spotify-track--main {
+  .spotify-track__details {
+    position: absolute;
+    opacity: 0;
+  }
 }

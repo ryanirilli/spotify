@@ -1,8 +1,6 @@
 import React from 'react';
 import raf from 'raf';
-import Modal from './Modal.jsx!';
 import ImgLoader from './ImgLoader.jsx!';
-import Drawer from './Drawer.jsx!';
 
 export default React.createClass({
 
@@ -11,138 +9,169 @@ export default React.createClass({
       playerProgress: null,
       progressBarWidth: 0,
       isImgLoaded: false,
-      isShowingTrackDetails: false
+      isShowingTrackDetails: false,
+      isPlayingPreview: false,
+      isShowingPalmAddToPlaylistUi: false,
+      isPalmSelectedTrack: false,
+      isShowingPalmPreview: false
+    }
+  },
+
+  componentDidUpdate(prevProps, prevState) {
+    if(this.state.isPalmSelectedTrack && !prevState.isPalmSelectedTrack) {
+      this.playPreview();
     }
   },
 
   render() {
-    const {track} = this.props;
-    const {progressBarWidth} = this.state;
+    const {progressBarWidth, isShowingPalmPreview, isPalmSelectedTrack} = this.state;
+    const {track, device} = this.props;
+    const isPalm = device === 'palm';
+    const artistName = track.getIn(['artists', 0, 'name']);
+    const trackName = track.get('name');
     return <div>
-      <div className="spotify-track" draggable="true"
-           onMouseEnter={this.playPreview}
-           onMouseLeave={this.pausePreview}
-           onDragStart={this.onDragStart}>
+      <div className={`spotify-track ${isPalm ? 'spotify-track--palm' : 'spotify-track--main'}`} draggable={isPalm}
+           onMouseEnter={!isPalm && this.playPreview}
+           onMouseLeave={!isPalm && this.pausePreview}
+           onDragStart= {!isPalm && this.onDragStart}
+           onTouchStart={ isPalm && this.togglePreview}>
         <div className="spotify-track__details">
-          {this.renderTrackArtistAndName()}
+          <div>
+            <h3 className="spotify-track__title text-truncate">
+              {artistName}
+            </h3>
+            <div className="text-truncate">
+              <a href={track.get('uri')}>
+                {trackName}
+              </a>
+            </div>
+          </div>
         </div>
 
         <ImgLoader src={track.getIn(['album', 'images', 1, 'url'])}/>
 
-        <audio className="spotify-track__preview"
+
+        {(!isPalm || isPalmSelectedTrack)  && <audio className="spotify-track__preview"
                ref="preview"
-               src={track.get('preview_url')}/>
+               src={track.get('preview_url')}/>}
 
         <div className="spotify-track__progress">
           <div className="spotify-track__progress-bar"
                style={{width: `${progressBarWidth}%`}}/>
         </div>
 
-        <div className="spotify-track__more"
+        {!isPalm && <div className="spotify-track__more"
              onClick={this.showTrackDetails}>
           <i className="icon-dots-three-horizontal"></i>
+        </div>}
+      </div>
+
+      {isShowingPalmPreview && this.renderPalmPreview()}
+
+    </div>
+  },
+
+  renderPalmPreview() {
+    const {track} = this.props;
+    const {progressBarWidth, isPlayingPreview} = this.state;
+
+    const artistName = track.getIn(['artists', 0, 'name']);
+    const trackImg = track.getIn(['album', 'images', 1, 'url']);
+    const trackName = track.get('name');
+
+    const palmPlayerStateIconClass = isPlayingPreview ? 'icon-pause' : 'icon-play';
+
+    return <div className="modal-palm">
+      <div className="modal-palm__content u-p--">
+        <div className="modal-palm__close u-mb--">
+          <i className="icon-close" onClick={e => this.pausePreview()} />
+        </div>
+        <div className="spotify-track-preview-palm">
+          <ImgLoader src={trackImg}/>
+          <div className="spotify-track-preview-palm__body">
+            <div className="progress-bar">
+              <div className="progress-bar__progress"
+                   style={{width: `${progressBarWidth}%`}}/>
+            </div>
+
+            <div className="media media--small u-mv-">
+              <div className="media__img">
+                <i className={`spotify-track-preview-palm__player-icon ${palmPlayerStateIconClass}`}
+                   onClick={e => this.togglePreview(true)} />
+              </div>
+              <div className="media__body">
+                <h3 className="u-mv0">{artistName}</h3>
+                <div className="u--mt--">{trackName}</div>
+              </div>
+            </div>
+
+            <button className="btn btn--small btn--pill u-1/1" onClick={this.onClickAddToPlaylistPalm}>
+              <i className="icon-spotify"/> Add to playlist
+            </button>
+
+          </div>
         </div>
       </div>
-      {this.state.isShowingTrackDetails ? this.renderTrackDetails() : null}
     </div>
+  },
+
+  onClickAddToPlaylistPalm() {
+    if(this.props.isSpotifyUserAuthenticated) {
+      this.setState({isShowingPalmAddToPlaylistUi: true})
+    } else {
+      window.open('/api/v1/spotify-login');
+    }
   },
 
   showTrackDetails() {
     const {track} = this.props;
     const artistId = track.getIn(['artists', 0, 'id']);
     this.pausePreview();
-    this.setState({isShowingTrackDetails: true});
-    this.props.fetchSpotifyArtist(artistId);
-    this.props.fetchSpotifyArtistAlbums(artistId);
-  },
-
-  renderTrackArtistAndName() {
-    const {track} = this.props;
-    return <div>
-      <h3 className="u-m0 spotify-track__title text-truncate">
-        {track.getIn(['artists', 0, 'name'])}
-      </h3>
-      <div className="text-truncate">
-        <a href={track.get('uri')}>
-          {track.get('name')}
-        </a>
-      </div>
-    </div>
-  },
-
-  renderTrackDetails() {
-    const {spotifyArtistDetails, spotifyArtistAlbums} = this.props;
-    const artistImg = spotifyArtistDetails.getIn(['images', 0, 'url']);
-    const albums = spotifyArtistAlbums.get('items') || [];
-    return <Modal onClose={this.closeTrackDetails}>
-      <div className="master-detail">
-        <div className="master-detail__sidebar">
-          {artistImg ? <ImgLoader className="u-250px" src={artistImg}/> : null}
-          {this.renderTrackArtistAndName()}
-        </div>
-        <div className="master-detail__body u-p">
-          <ul className="list-bare list-hover list-hover-light">
-            {albums.map(album => this.renderAlbum(album))}
-          </ul>
-        </div>
-      </div>
-    </Modal>
-  },
-
-  renderAlbum(album) {
-    const id = album.get('id');
-    const {spotifyAlbumDetails} = this.props;
-    const isActiveAlbum = spotifyAlbumDetails.get('id') === id;
-    const tracks = spotifyAlbumDetails.getIn(['tracks', 'items']) || [];
-    return <li onClick={e => this.loadAlbum(id)} key={id}
-               className="text-truncate u-pt--">
-      <span className="icon-folder-music u-mr--"></span> {album.get('name')}
-      {isActiveAlbum && tracks.size && this.renderTracks(tracks)}
-    </li>
-  },
-
-  renderTracks(tracks) {
-    return <Drawer isOpen={true} shouldAnimateInitialOpen={true}>
-      <ul>
-        {tracks.map(track => <li key={track.get('id')}>
-          {track.get('name')}
-          <audio className="spotify-track__preview"
-                 ref={`${track.get('id')}-preview`}
-                 src={track.get('preview_url')}/>
-        </li>)}
-      </ul>
-    </Drawer>
-  },
-
-  closeTrackDetails() {
-    this.setState({ isShowingTrackDetails: false});
-    this.props.resetSpotifyArtistDetails();
+    this.props.onTrackClick(artistId);
+    this.props.replace({
+      ...this.props.location,
+      query: {...this.props.location.query, detailsArtistId: artistId}
+    });
   },
 
   setProgressBar() {
     const {preview} = this.refs;
     const {currentTime} = preview;
     const progressBarWidth = (currentTime / 30) * 100;
-    const playerProgress = raf(() => {
-      this.setProgressBar()
-    });
+    const playerProgress = raf(() => this.setProgressBar());
     this.setState({playerProgress, progressBarWidth});
   },
 
-  playPreview() {
-    const {preview} = this.refs;
-    preview.play(0);
-    const playerProgress = raf(() => {
-      this.setProgressBar()
-    });
-    this.setState({playerProgress});
+  togglePreview(isShowingPalmPreview) {
+    if(this.state.isPlayingPreview) {
+      this.pausePreview(isShowingPalmPreview);
+    } else {
+      this.playPreview();
+    }
   },
 
-  pausePreview() {
+  playPreview() {
+    const newState = {isPlayingPreview: true};
+    const isPalm = this.props.device === 'palm';
+    if (!isPalm || this.state.isPalmSelectedTrack) {
+      const {preview} = this.refs;
+      preview.play();
+      newState.playerProgress = raf(() => this.setProgressBar());
+      if(isPalm) {
+        newState.isShowingPalmPreview = true;
+      }
+    } else {
+      newState.isPalmSelectedTrack = true;
+    }
+    this.setState(newState);
+  },
+
+  pausePreview(isShowingPalmPreview = false) {
     const {preview} = this.refs;
     preview.pause();
     const {playerProgress} = this.state;
     raf.cancel(playerProgress);
+    this.setState({isPlayingPreview: false, isShowingPalmPreview});
   },
 
   onDragStart(e) {

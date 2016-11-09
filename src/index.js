@@ -27,20 +27,10 @@ const reducers = {routing: routerReducer, app, spotify, spotifyArtistDetails, sp
 const store = createStore(combineReducers(reducers), applyMiddleware(logger, thunk, routingMiddleware));
 const history = syncHistoryWithStore(browserHistory, store);
 
-const breakpoints = {
-  palm: "screen and (max-width: 44.9375em)",
-  lap: "screen and (min-width: 45em) and (max-width: 63.9375em)",
-  desk: "screen and (min-width: 64em)"
-};
+import {getDevice} from 'src/constants/breakpoints';
 
 function setDevice() {
-  for (let device in breakpoints) {
-    const breakpoint = breakpoints[device];
-    if(window.matchMedia(breakpoint).matches) {
-      store.dispatch({type: 'SET_DEVICE', device});
-      break;
-    }
-  }
+  store.dispatch({type: 'SET_DEVICE', device: getDevice()});
 }
 
 setDevice();
@@ -50,9 +40,9 @@ window.addEventListener('resize', debouncedSetDevice);
 ReactDOM.render(
   <Provider store={store}>
     <Router history={history}>
-      <Route path="/" component={HomeContainer}></Route>
-      <Route path="/app" component={AppContainer}></Route>
-      <Route path="/spotify-login-success" component={SpotifyLoginSuccess}></Route>
+      <Route path="/" component={HomeContainer} />
+      <Route path="/app" component={AppContainer} />
+      <Route path="/spotify-login-success" component={SpotifyLoginSuccess} />
     </Router>
   </Provider>,
   document.getElementById('app')

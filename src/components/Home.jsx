@@ -33,7 +33,6 @@ export const Home = React.createClass({
   },
 
   render() {
-
     return <div>
       <div className="u-p--">
         <object className="block" type="image/svg+xml" data="/static/img/logo.svg" width="65"></object>
