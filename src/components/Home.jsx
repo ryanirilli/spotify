@@ -37,7 +37,6 @@ export const Home = React.createClass({
       <div className="u-p--">
         <object className="block" type="image/svg+xml" data="/static/img/logo.svg" width="65"></object>
       </div>
-
       <div className="bg-blue u-p- u-pb+">
         <div className="u-max-400px center">
           <h2>Enter your favorite artist</h2>
@@ -50,10 +49,6 @@ export const Home = React.createClass({
                             artist={this.props.spotifySelectedArtist} />
         </div>
       </div>
-
-      <UnsplashPhoto />
-
-
     </div>
   }
 });
