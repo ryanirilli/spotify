@@ -38,7 +38,7 @@ export const Home = React.createClass({
         <object className="block" type="image/svg+xml" data="/static/img/logo.svg" width="65"></object>
       </div>
 
-      <div className="bg-gradient-blue u-p- u-pb+">
+      <div className="bg-blue u-p- u-pb+">
         <div className="u-max-400px center">
           <h2>Enter your favorite artist</h2>
           <TypeaheadSpotify getSpotifyAccessToken={this.props.getSpotifyAccessToken}
@@ -46,7 +46,8 @@ export const Home = React.createClass({
                             spotifySearch={this.props.spotifySearch}
                             resetSpotifySearch={this.props.resetSpotifySearch}
                             spotifySearchResults={this.props.spotifySearchResults}
-                            handleArtistSelect={this.handleArtistSelect}/>
+                            handleArtistSelect={this.handleArtistSelect}
+                            artist={this.props.spotifySelectedArtist} />
         </div>
       </div>
 

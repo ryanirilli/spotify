@@ -2,6 +2,15 @@
   background: black;
 }
 
+.bg-white {
+  background: white;
+}
+
+.bg-blue {
+  background: $blue;
+  color: white;
+}
+
 .bg-gradient-blue {
   color: white;
   /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#4096ee+0,4096ee+100;Blue+Flat+%232 */

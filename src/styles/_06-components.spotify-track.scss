@@ -1,10 +1,6 @@
 $spotify-track-progress-bg: red !default;
 $spotify-track-details-color: red !default;
-$spotify-details-transition-duration: 500ms;
-
-.spotify-tracks:hover .spotify-track:not(:hover) {
-  opacity: 0.4;
-}
+$spotify-details-transition-duration: 250ms;
 
 .spotify-track {
   overflow: hidden;
@@ -69,10 +65,10 @@ $spotify-details-transition-duration: 500ms;
 }
 
 .spotify-track-preview-palm__player-icon {
-  font-size: 25px;
-  position: relative;
-  top: 5px;
-  left: 5px;
+  font-size: 195px;
+  position: absolute;
+  width: 100%;
+  color: white;
 }
 
 .spotify-track--main {

@@ -1,15 +1,12 @@
+$body-bg-color: #fdfdfd;
 $dark-grey: #333745;
 $dark-grey-contrast-dark: #232731;
 $dark-grey-contrast-light: #727680;
-$blue: #4096ee;
+$blue: #f5614c;
 $green: #38bf83;
 
 $main-bg: white;
 $main-color: $dark-grey-contrast-light;
-
-$typeahead-main-bg: $blue;
-$typeahead-main-color: white;
-$typeahead-border-color: white;
 
 $range-slider-fill-color:          $blue;
 $range-slider-bg-color:            rgba(35, 39, 49, 0.05);
@@ -17,10 +14,10 @@ $range-slider-handle-bg-color:     $blue;
 $range-slider-handle-border-color: transparent;
 
 $spotify-track-progress-bg: white;
-$spotify-track-details-color: $blue;
+$spotify-track-details-color: #a2a2a2;
 
-$inuit-btn-background:      $blue;
-$inuit-btn-border-color:    $blue;
+$inuit-btn-background:      #565656;
+$inuit-btn-border-color:    #565656;
 $inuit-btn-color:           #fff;
 
 $droppable-border-color: $blue;

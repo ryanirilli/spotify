@@ -13,7 +13,8 @@ export default React.createClass({
       isPlayingPreview: false,
       isShowingPalmAddToPlaylistUi: false,
       isPalmSelectedTrack: false,
-      isShowingPalmPreview: false
+      isShowingPalmPreview: false,
+      initialScrollPosition: 0
     }
   },
 
@@ -21,6 +22,10 @@ export default React.createClass({
     if(this.state.isPalmSelectedTrack && !prevState.isPalmSelectedTrack) {
       this.playPreview();
     }
+  },
+
+  setInitialScrollPosition() {
+    this.setState({initialScrollPosition: document.body.scrollTop});
   },
 
   render() {
@@ -33,8 +38,9 @@ export default React.createClass({
       <div className={`spotify-track ${isPalm ? 'spotify-track--palm' : 'spotify-track--main'}`} draggable={isPalm}
            onMouseEnter={!isPalm && this.playPreview}
            onMouseLeave={!isPalm && this.pausePreview}
-           onDragStart= {!isPalm && this.onDragStart}
-           onTouchStart={ isPalm && this.togglePreview}>
+           onDragStart={!isPalm && this.onDragStart}
+           onTouchStart={isPalm && this.setInitialScrollPosition}
+           onTouchEnd={isPalm && this.togglePalmPreview}>
         <div className="spotify-track__details">
           <div>
             <h3 className="spotify-track__title text-truncate">
@@ -49,7 +55,6 @@ export default React.createClass({
         </div>
 
         <ImgLoader src={track.getIn(['album', 'images', 1, 'url'])}/>
-
 
         {(!isPalm || isPalmSelectedTrack)  && <audio className="spotify-track__preview"
                ref="preview"
@@ -71,6 +76,12 @@ export default React.createClass({
     </div>
   },
 
+  closePalmPreview() {
+    this.pausePreview();
+    this.setState({isShowingPalmPreview: false});
+    this.props.setSpotifyIsShowingArtistDetails(false);
+  },
+
   renderPalmPreview() {
     const {track} = this.props;
     const {progressBarWidth, isPlayingPreview} = this.state;
@@ -84,9 +95,15 @@ export default React.createClass({
     return <div className="modal-palm">
       <div className="modal-palm__content u-p--">
         <div className="modal-palm__close u-mb--">
-          <i className="icon-close" onClick={e => this.pausePreview()} />
+          <i className="icon-close" onClick={this.closePalmPreview} />
         </div>
         <div className="spotify-track-preview-palm">
+          <div className="spotify-track-preview-palm__player-icon">
+            <div className="text-center">
+              <i className={`${palmPlayerStateIconClass}`}
+                 onTouchStart={this.togglePalmPreview} />
+            </div>
+          </div>
           <ImgLoader src={trackImg}/>
           <div className="spotify-track-preview-palm__body">
             <div className="progress-bar">
@@ -94,15 +111,9 @@ export default React.createClass({
                    style={{width: `${progressBarWidth}%`}}/>
             </div>
 
-            <div className="media media--small u-mv-">
-              <div className="media__img">
-                <i className={`spotify-track-preview-palm__player-icon ${palmPlayerStateIconClass}`}
-                   onClick={e => this.togglePreview(true)} />
-              </div>
-              <div className="media__body">
-                <h3 className="u-mv0">{artistName}</h3>
-                <div className="u--mt--">{trackName}</div>
-              </div>
+            <div className="text-center u-pv--">
+              <h3 className="u-mv0">{artistName}</h3>
+              <div className="u--mt--">{trackName}</div>
             </div>
 
             <button className="btn btn--small btn--pill u-1/1" onClick={this.onClickAddToPlaylistPalm}>
@@ -142,9 +153,15 @@ export default React.createClass({
     this.setState({playerProgress, progressBarWidth});
   },
 
-  togglePreview(isShowingPalmPreview) {
+  togglePalmPreview(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    if (this.state.initialScrollPosition !== document.body.scrollTop) {
+      return;
+    }
+
     if(this.state.isPlayingPreview) {
-      this.pausePreview(isShowingPalmPreview);
+      this.pausePreview();
     } else {
       this.playPreview();
     }
@@ -159,6 +176,7 @@ export default React.createClass({
       newState.playerProgress = raf(() => this.setProgressBar());
       if(isPalm) {
         newState.isShowingPalmPreview = true;
+        this.props.setSpotifyIsShowingArtistDetails(true);
       }
     } else {
       newState.isPalmSelectedTrack = true;
@@ -166,21 +184,17 @@ export default React.createClass({
     this.setState(newState);
   },
 
-  pausePreview(isShowingPalmPreview = false) {
+  pausePreview() {
     const {preview} = this.refs;
     preview.pause();
     const {playerProgress} = this.state;
     raf.cancel(playerProgress);
-    this.setState({isPlayingPreview: false, isShowingPalmPreview});
+    this.setState({isPlayingPreview: false});
   },
 
   onDragStart(e) {
     this.pausePreview();
     const trackData = this.props.track.toJSON();
     e.dataTransfer.setData("track", JSON.stringify(trackData));
-  },
-
-  loadAlbum(id) {
-    this.props.fetchSpotifyAlbumDetails(id);
   }
 });

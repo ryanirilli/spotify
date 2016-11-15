@@ -8,6 +8,7 @@ export default React.createClass({
   getDefaultProps() {
     return {
       device: '',
+      value: '',
       results: List(),
       fetchData: function() {},
       renderResult: function() {},
@@ -16,12 +17,19 @@ export default React.createClass({
   },
 
   getInitialState() {
+    const FETCH_DEBOUNCE_DURATION = this.props.device === 'palm' ? 700 : 250;
     return {
       isShowingResults: false,
       curActiveIndex: null,
-      input: '',
-      fetchData: debounce(this.fetchData, 250),
+      input: this.props.value || '',
+      fetchData: debounce(this.fetchData, FETCH_DEBOUNCE_DURATION),
       isPalmFocused: false
+    }
+  },
+
+  componentWillReceiveProps(nextProps) {
+    if (this.props.value !== nextProps.value) {
+      this.setState({input: nextProps.value });
     }
   },
 
@@ -32,21 +40,45 @@ export default React.createClass({
         this.setState({isPalmFocused: true});
       }
     }
+    this.setState({input: ''});
+  },
+
+  onBlur() {
+    this.setState({input: this.props.value || ''})
+  },
+
+  onClosePalmSearch(e) {
+    e.stopPropagation();
+    e.preventDefault();
+    this.setState({
+      isPalmFocused: false,
+      isShowingResults: false
+    });
+    this.refs.typeaheadInput.blur();
+  },
+
+  renderPalmClose() {
+    return <div className="typeahead-palm__close" onTouchEnd={this.onClosePalmSearch}>
+      <i className="icon-close" />
+    </div>
   },
 
   render() {
-    const shouldShowResults = this.props.results.size && this.state.isShowingResults;
+    const shouldShowResults = this.props.results.size && (this.state.isPalmFocused || this.state.isShowingResults);
     const {isPalmFocused} = this.state;
     return <div ref="typeahead"
                 className={`typeahead typeahead--${this.props.theme || 'main'} ${shouldShowResults ? 'typeahead--has-results' : ''} ${isPalmFocused ? 'typeahead--palm-focused' : ''}`}
                 onKeyDown={this.onKeydown}>
-      <input className="typeahead__input u-1/1"
+      {isPalmFocused && this.renderPalmClose()}
+      <input ref="typeaheadInput"
+             className="typeahead__input u-1/1"
              placeholder={this.props.placeholder}
              type="text"
              value={this.state.input}
              onChange={this.handleInput}
              onClick={this.showResults}
-             onFocus={this.onFocus} />
+             onFocus={this.onFocus}
+             onBlur={this.onBlur} />
       {shouldShowResults ? this.renderResults() : null}
     </div>
   },
@@ -118,6 +150,7 @@ export default React.createClass({
         this.setState({input: result.get(selectedValueLabel)});
       }
       this.props.onSelect(result);
+      this.setState({isPalmFocused: false});
     }
   },
 

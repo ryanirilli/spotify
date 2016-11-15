@@ -21,6 +21,13 @@ export function setAlbum(album) {
   }
 }
 
+export function setIsShowingArtistDetails(isShowingArtistDetails) {
+  return {
+    type: 'SET_IS_SHOWING_ARTIST_DETAILS',
+    isShowingArtistDetails
+  }
+}
+
 export function resetArtistDetails() {
   return {
     type: 'RESET_SPOTIFY_ARTIST_DETAILS',
@@ -52,5 +59,6 @@ export default {
   fetchArtistDetails,
   fetchArtistAlbums,
   fetchAlbumDetails,
-  resetArtistDetails
+  resetArtistDetails,
+  setIsShowingArtistDetails
 }

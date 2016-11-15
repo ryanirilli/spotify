@@ -23,7 +23,8 @@ export default React.createClass({
                       results={this.props.spotifySearchResults}
                       renderResult={this.renderSpotifySearchResult}
                       onSelect={this.props.handleArtistSelect}
-                      selectedValueLabel="name"/>
+                      selectedValueLabel="name"
+                      value={this.props.artist ? this.props.artist.get('name') : ''} />
   },
 
   renderSpotifySearchResult(result, i) {

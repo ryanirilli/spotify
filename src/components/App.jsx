@@ -29,7 +29,8 @@ function mapStateToProps(state) {
     spotifyUserPlaylists: state.spotify.get('userPlaylists'),
     spotifyArtistDetails: state.spotifyArtistDetails.get('artist'),
     spotifyArtistAlbums: state.spotifyArtistDetails.get('albums'),
-    spotifyAlbumDetails: state.spotifyAlbumDetails.get('album')
+    spotifyAlbumDetails: state.spotifyAlbumDetails.get('album'),
+    isSpotifyShowingArtistDetails: state.spotifyArtistDetails.get('isShowingArtistDetails')
   };
 }
 
@@ -48,7 +49,8 @@ function mapDispatchToProps(dispatch) {
     fetchSpotifyArtist: SpotifyArtistDetails.fetchArtistDetails,
     fetchSpotifyArtistAlbums: SpotifyArtistDetails.fetchArtistAlbums,
     resetSpotifyArtistDetails: SpotifyArtistDetails.resetArtistDetails,
-    fetchSpotifyAlbumDetails: SpotifyArtistDetails.fetchAlbumDetails
+    fetchSpotifyAlbumDetails: SpotifyArtistDetails.fetchAlbumDetails,
+    setSpotifyIsShowingArtistDetails: SpotifyArtistDetails.setIsShowingArtistDetails
   }, dispatch);
 }
 
@@ -107,7 +109,25 @@ export const App = React.createClass({
     }
   },
 
+  openTrackDetails(artistId) {
+    this.setState({isShowingTrackDetails: true});
+    this.props.fetchSpotifyArtist(artistId);
+    this.props.fetchSpotifyArtistAlbums(artistId);
+  },
+
+  closeTrackDetails() {
+    const query = {...this.props.location.query};
+    delete query.detailsArtistId;
+    this.setState({ isShowingTrackDetails: false});
+    this.props.resetSpotifyArtistDetails();
+    this.props.replace({
+      ...this.props.location,
+      query
+    });
+  },
+
   render() {
+
     if(!this.props.spotifySelectedArtist.size || !this.props.isSpotifyAuthenticated) {
       return null;
     }
@@ -115,13 +135,13 @@ export const App = React.createClass({
 
       {this.props.isFetchingSpotifyRecs ? this.renderLoading() : null}
 
-      <div className="fixed-top bg-gradient-blue">
+      <div className="fixed-top bg-blue">
         <div className="section-main u-ph- u-pb-">
           {this.renderSearch()}
         </div>
       </div>
 
-      <div className="u-pt++ palm-pt+">
+      <div className="u-pt+">
         {this.props.spotifyRecs.size ? this.renderSpotifyRecs() : this.renderInitialScreen()}
       </div>
 
@@ -133,7 +153,7 @@ export const App = React.createClass({
   renderInitialScreen() {
     return <div className="initial-screen u-pt+">
       <div className="initial-screen__content">
-        <h1>Initial</h1>
+        <img className="pulse" src="/static/img/turntable.svg" />
       </div>
     </div>
   },
@@ -143,11 +163,11 @@ export const App = React.createClass({
     return <div className="section-main u-ph-">
       <div className="layout">
 
-        {!isPalm ? <div className="layout__item u-1/4 u-1/1-palm">
+        {!isPalm && <div className="layout__item u-1/4 u-2/5-lap u-1/1-palm">
           {this.renderSidebar()}
-        </div> : null}
+        </div>}
 
-        <div className="layout__item u-3/4 u-1/1-palm">
+        <div className="layout__item u-3/4 u-3/5-lap u-1/1-palm">
           {this.renderTracks()}
         </div>
       </div>
@@ -167,7 +187,7 @@ export const App = React.createClass({
         {this.renderSliders()}
       </Drawer>
 
-      <Waypoint offsetTop={80} reset={this.state.playlistDrawerReset} isDisabled={this.props.device !== 'desk'}>
+      <Waypoint offsetTop={60} reset={this.state.playlistDrawerReset} isDisabled={this.props.device !== 'desk'}>
         <div className="drawer-header" onClick={this.toggleSpotifyPlaylistsDrawer}>
           My playlists
         </div>
@@ -180,8 +200,8 @@ export const App = React.createClass({
 
   renderSpotifyLoginButton() {
     return [
-      <p key="0">
-        Drag and drop tracks directly to your playlists. You need to connect to Spotify to enable this feature.
+      <p key="0" className="u-ph--">
+        Drag and drop tracks to your playlists
       </p>,
       <button key="1" className="btn btn--small btn--pill u-1/1" onClick={() => window.open("/api/v1/spotify-login") }>
         <i className="icon-spotify"/> Spotify connect
@@ -219,28 +239,11 @@ export const App = React.createClass({
   },
 
   renderTrack(track) {
-    return <div key={track.get('id')} className="layout__item u-1/5 u-1/3-palm">
+    return <div key={track.get('id')} className="layout__item u-1/5 u-1/3-portable">
       <div className="u-mb">
         <SpotifyTrack {...this.props} track={track} onTrackClick={this.openTrackDetails}/>
       </div>
     </div>
-  },
-
-  openTrackDetails(artistId) {
-    this.setState({isShowingTrackDetails: true});
-    this.props.fetchSpotifyArtist(artistId);
-    this.props.fetchSpotifyArtistAlbums(artistId);
-  },
-
-  closeTrackDetails() {
-    const query = {...this.props.location.query};
-    delete query.detailsArtistId;
-    this.setState({ isShowingTrackDetails: false});
-    this.props.resetSpotifyArtistDetails();
-    this.props.replace({
-      ...this.props.location,
-      query
-    });
   },
 
   renderTrackDetails() {
@@ -252,7 +255,7 @@ export const App = React.createClass({
         <div className="master-detail__sidebar">
           {artistImg ? <ImgLoader className="u-250px" src={artistImg}/> : null}
         </div>
-        <div className="master-detail__body u-p">
+        <div className="master-detail__body u-pv">
           <ul className="list-bare list-hover list-hover-light">
             {albums.map(album => this.renderAlbum(album))}
           </ul>
@@ -267,15 +270,15 @@ export const App = React.createClass({
     const isActiveAlbum = spotifyAlbumDetails.get('id') === id;
     const tracks = spotifyAlbumDetails.getIn(['tracks', 'items']) || [];
     return <li onClick={e => this.loadAlbum(id)} key={id}
-               className="text-truncate u-pt--">
-      <span className="icon-folder-music u-mr--"></span> {album.get('name')}
+               className="text-truncate">
+      <span className="icon-folder-music u-mh--"></span> {album.get('name')}
       {isActiveAlbum && tracks.size && this.renderAlbumTracks(tracks)}
     </li>
   },
 
   renderAlbumTracks(tracks) {
     return <Drawer isOpen={true} shouldAnimateInitialOpen={true}>
-      <ul>
+      <ul className="list-bare u-pv- u-pl bg-white">
         {tracks.map(track => <li key={track.get('id')}>
           {track.get('name')}
           <audio className="spotify-track__preview"
@@ -287,18 +290,19 @@ export const App = React.createClass({
   },
 
   renderSearch() {
-    return <div className="search u-pt palm-pt-">
+    return <div className="search u-pt-">
       <div className="layout layout--flush">
-        <div className="layout__item u-1/6">
-          <div className="text-center u-pr--">
-            <object className="logo-outlined block u-1/1" type="image/svg+xml" data="/static/img/logo-white.svg"></object>
+        <div className="layout__item u-1/4">
+          <div className="text-center u-pr-- palm-pt--">
+            <object className="logo block u-1/1" type="image/svg+xml" data="/static/img/logo-white.svg"></object>
           </div>
         </div>
-        <div className="layout__item u-5/6">
+        <div className="layout__item u-3/4">
           <TypeaheadSpotify getSpotifyAccessToken={this.props.getSpotifyAccessToken}
                             device={this.props.device}
                             isSpotifyAuthenticated={this.props.isSpotifyAuthenticated}
                             spotifySearch={this.props.spotifySearch}
+                            artist={this.props.spotifySelectedArtist}
                             resetSpotifySearch={this.props.resetSpotifySearch}
                             spotifySearchResults={this.props.spotifySearchResults}
                             handleArtistSelect={this.handleArtistSelect}/>
@@ -326,7 +330,7 @@ export const App = React.createClass({
     return <div key={key}>
       <label>{label} {this.getSliderVal(key)}%</label>
       <RangeSlider min={0} max={100} step={1} value={this.state.targets[key]}
-                   onChange={val => this.setSliderVal(key, val) }/>
+                   onChange={val => this.setSliderVal(key, val) } />
     </div>
   },
 
@@ -343,7 +347,7 @@ export const App = React.createClass({
   },
 
   setSliderVal(key, val) {
-    const targets = Object.assign({}, this.state.targets);
+    const targets = {...this.state.targets};
     targets[key] = val;
     this.setState({targets});
     this.state.debouncedFetchRecs(this.props.spotifySelectedArtist.get('id'));
@@ -406,6 +410,10 @@ export const App = React.createClass({
   onDragLeave(playlistId) {
     const node = this.refs[playlistId];
     node.classList.remove('droppable--hover');
+  },
+
+  loadAlbum(id) {
+    this.props.fetchSpotifyAlbumDetails(id);
   }
 
 });

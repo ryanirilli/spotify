@@ -1,6 +1,7 @@
 import { fromJS } from 'immutable';
 
 const initialState = fromJS({
+  isShowingArtistDetails: false,
   artist: {},
   albums: {}
 });
@@ -11,6 +12,8 @@ export default function(state = initialState, action = {}) {
       return state.set('artist', fromJS(action.artist));
     case 'SET_SPOTIFY_ARTIST_ALBUMS':
       return state.set('albums', fromJS(action.albums));
+    case 'SET_IS_SHOWING_ARTIST_DETAILS':
+      return state.set('isShowingArtistDetails', action.isShowingArtistDetails);
     case 'RESET_SPOTIFY_ARTIST_DETAILS':
       return initialState;
     default:

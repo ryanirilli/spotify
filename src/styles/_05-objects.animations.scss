@@ -7,6 +7,10 @@
   }
 }
 
+.pulse {
+  @include animation('pulse 700ms ease infinite alternate');
+}
+
 @include keyframes(slide-down) {
   0% {
     top: -50px;
@@ -18,5 +22,14 @@
     top: 0;
     opacity: 1;
     @include vendor(transform, rotate3d(1,0,0,0deg));
+  }
+}
+
+@include keyframes(pulse) {
+  0% {
+    @include vendor(transform, scale(0.8));
+  }
+  100% {
+    @include vendor(transform, scale(1));
   }
 }
