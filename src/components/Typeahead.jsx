@@ -35,12 +35,11 @@ export default React.createClass({
 
   onFocus() {
     const {device} = this.props;
-    switch (device) {
-      case 'palm': {
-        this.setState({isPalmFocused: true});
-      }
-    }
-    this.setState({input: ''});
+    this.setState({
+      input: '',
+      isPalmFocused: device === 'palm',
+      isShowingResults: Boolean(this.props.results.size)
+    });
   },
 
   onBlur() {

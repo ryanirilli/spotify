@@ -294,7 +294,7 @@ export const App = React.createClass({
       <div className="layout layout--flush">
         <div className="layout__item u-1/4">
           <div className="text-center u-pr-- palm-pt--">
-            <object className="logo block u-1/1" type="image/svg+xml" data="/static/img/logo-white.svg"></object>
+            <object className="logo block u-1/1" type="image/svg+xml" data="/static/img/logo_spotworm_white.svg"></object>
           </div>
         </div>
         <div className="layout__item u-3/4">

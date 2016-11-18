@@ -35,7 +35,7 @@ export const Home = React.createClass({
   render() {
     return <div>
       <div className="u-p--">
-        <object className="block" type="image/svg+xml" data="/static/img/logo.svg" width="65"></object>
+        <object className="block" type="image/svg+xml" data="/static/img/logo_spotworm.svg" width="165"></object>
       </div>
       <div className="bg-blue u-p- u-pb+">
         <div className="u-max-400px center">
