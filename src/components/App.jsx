@@ -1,5 +1,5 @@
 import React from 'react';
-import {replace} from 'react-router-redux';
+import {replace, push} from 'react-router-redux';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import {debounce} from './../utils/utils';
@@ -36,7 +36,7 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({
-    replace,
+    push, replace,
     getSpotifyAccessToken: Spotify.getAccessToken,
     fetchSpotfyRecs: Spotify.fetchRecs,
     spotifySearch: Spotify.search,
@@ -135,7 +135,7 @@ export const App = React.createClass({
 
       {this.props.isFetchingSpotifyRecs ? this.renderLoading() : null}
 
-      <div className="fixed-top bg-blue">
+      <div className="fixed-top bg-orange">
         <div className="section-main u-ph- u-pb-">
           {this.renderSearch()}
         </div>
@@ -294,7 +294,7 @@ export const App = React.createClass({
       <div className="layout layout--flush">
         <div className="layout__item u-1/4">
           <div className="text-center u-pr-- palm-pt--">
-            <object className="logo block u-1/1" type="image/svg+xml" data="/static/img/logo_spotworm_white.svg"></object>
+            <img onClick={e => this.props.push('/')} className="logo block u-1/1" src="/static/img/logo_spotworm_white.svg"></img>
           </div>
         </div>
         <div className="layout__item u-3/4">

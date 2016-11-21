@@ -22,6 +22,10 @@
   float: right;
 }
 
+.full-page {
+  height: 100vh;
+}
+
 .rotate-vertical-palm {
   @include media-query(palm) {
     @include vendor(transform, rotateZ(90deg));

@@ -10,6 +10,7 @@ import UnsplashPhoto from './UnsplashPhoto.jsx!';
 
 function mapStateToProps(state) {
   return {
+    device: state.app.get('device'),
     isSpotifyAuthenticated: state.spotify.get('isAuthenticated'),
     spotifySearchResults: state.spotify.get('searchResults')
   };
@@ -33,20 +34,22 @@ export const Home = React.createClass({
   },
 
   render() {
-    return <div>
-      <div className="u-p--">
-        <object className="block" type="image/svg+xml" data="/static/img/logo_spotworm.svg" width="165"></object>
-      </div>
-      <div className="bg-blue u-p- u-pb+">
-        <div className="u-max-400px center">
-          <h2>Enter your favorite artist</h2>
-          <TypeaheadSpotify getSpotifyAccessToken={this.props.getSpotifyAccessToken}
+    return <div className="home">
+      <div className="bg-orange bg-hero-home u-ph- full-page">
+        <div className="u-pv">
+          <object className="block" type="image/svg+xml" data="/static/img/logo_spotworm_white.svg" width="165"></object>
+        </div>
+        <div className="u-max-400px center u-pv+">
+          <h2 className="u-mv0">Enter your favorite music artist</h2>
+          <TypeaheadSpotify device={this.props.device}
+                            getSpotifyAccessToken={this.props.getSpotifyAccessToken}
                             isSpotifyAuthenticated={this.props.isSpotifyAuthenticated}
                             spotifySearch={this.props.spotifySearch}
                             resetSpotifySearch={this.props.resetSpotifySearch}
                             spotifySearchResults={this.props.spotifySearchResults}
                             handleArtistSelect={this.handleArtistSelect}
-                            artist={this.props.spotifySelectedArtist} />
+                            artist={this.props.spotifySelectedArtist}
+                            theme="fancy"/>
         </div>
       </div>
     </div>

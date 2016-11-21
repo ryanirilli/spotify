@@ -3,7 +3,6 @@ $typeahead-main-color: black !default;
 $typeahead-border-radius: 3px !default;
 $typeahead-border-color: white !default;
 
-
 .typeahead {
   position: relative;
 }
@@ -32,7 +31,7 @@ $typeahead-border-color: white !default;
   border-radius: $typeahead-border-radius;
   padding: 6px;
   outline: none !important;
-  @include placeholder-color(white);
+  @include placeholder-color(rgba(black, 0.2));
   text-transform: capitalize;
 }
 
@@ -44,38 +43,48 @@ $typeahead-border-color: white !default;
   height: 100%;
 }
 
-.typeahead--main {
+
+.typeahead__results {
+  background: white;
+  color: #737373;
+  border-top: none !important;
+  border-color: $typeahead-border-color;
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 0 0 4px 4px;
+  box-shadow: 0 7px 10px rgba(black,0.12);
+}
+
+.typeahead__result {
+  padding: 3px;
+  &.typeahead__result--active {
+    background: rgba(black, 0.06);
+    cursor: pointer;
+  }
+}
+
+&.typeahead--has-results {
+  .typeahead__input {
+    border-radius: $typeahead-border-radius $typeahead-border-radius 0 0;
+  }
 
   .typeahead__results {
-    background: white;
+    border-radius: 0 0 $typeahead-border-radius $typeahead-border-radius;
     color: #737373;
-    border-top: none !important;
-    border-color: $typeahead-border-color;
-    border-width: 1px;
-    border-style: solid;
-    border-radius: 0 0 4px 4px;
-    box-shadow: 0 7px 10px rgba(black,0.4);
   }
+}
 
-  .typeahead__result {
-    padding: 3px;
-    &.typeahead__result--active {
-      background: rgba(black, 0.06);
-      cursor: pointer;
-    }
+
+.typeahead--fancy {
+  .typeahead__input {
+    border-radius: 0;
+    border-top: 0;
+    border-right: 0;
+    border-left: 0;
+    background: transparent;
+    color: white;
+    @include placeholder-color(rgba(white, 0.6));
   }
-
-  &.typeahead--has-results {
-    .typeahead__input {
-      border-radius: $typeahead-border-radius $typeahead-border-radius 0 0;
-    }
-
-    .typeahead__results {
-      border-radius: 0 0 $typeahead-border-radius $typeahead-border-radius;
-      color: #737373;
-    }
-  }
-
 }
 
 .typeahead--palm-focused {
