@@ -92,8 +92,8 @@ export default React.createClass({
   renderUserPlaylists() {
     const playlists = this.props.spotifyUserPlaylists.get('items') || [];
     return <div>
-      <h3 className="u-pl- u-mb0">Add Track To Playlist</h3>
-      <ul className="list-bare">
+      <h3 className="u-pl- u-mv0 bg-light-grey">Add Track To Playlist</h3>
+      <ul className="bg-lightest-grey list-bare">
         {playlists.map(playlist => this.renderPlaylist(playlist))}
       </ul>
     </div>
@@ -104,7 +104,7 @@ export default React.createClass({
     return <li key={playlistId}
                onTouchStart={e => this.addTrackToPlaylist(playlistId)}
                ref={playlistId}
-               className={`u-ph- u-pv-- text-truncate`}>
+               className={`u-ph- u-pv-- text-truncate u-bb-light`}>
       {playlist.get('name')}
     </li>
   },
@@ -148,7 +148,7 @@ export default React.createClass({
               <div className="u--mt--">{trackName}</div>
             </div>
 
-            {this.state.isSpotifyUserAuthenticated ? this.renderUserPlaylists() :
+            {this.props.isSpotifyUserAuthenticated ? this.renderUserPlaylists() :
               <div className="u-ph u-pb-">
                 <button className="btn btn--small btn--pill u-1/1" onClick={this.onClickAddToPlaylistPalm}>
                   <i className="icon-spotify"/> Add to playlist
