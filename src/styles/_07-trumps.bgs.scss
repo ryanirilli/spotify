@@ -15,4 +15,8 @@
   background-image: url('/static/img/home-hero_01.svg');
   background-repeat: no-repeat;
   background-position: bottom;
+  background-size: contain;
+  @include media-query(desk) {
+    background-size: cover;
+  }
 }

@@ -36,7 +36,31 @@ export function request(url, opts) {
 
         if (res.status > 400) {
           return res.json()
-            .then(json => reject({errors: json.errors, res}));
+            .then(json => {
+              if (json.error.status === 401) {
+                // const refresh_token = getLocalStorageItem('userRefresh');
+                // if (refresh_token) {
+                //   const params = {
+                //     method: 'post',
+                //     grant_type: 'refresh_token',
+                //     mode: 'no-cors',
+                //     refresh_token
+                //   };
+                //   fetch('https://accounts.spotify.com/api/token', params)
+                //     .then(res => res.json())
+                //     .then(json => {
+                //       debugger;
+                //     }).catch(json => {
+                //       deleteLocalStorageItem('accessToken');
+                //       deleteLocalStorageItem('userAccessToken');
+                //       deleteLocalStorageItem('userRefresh');
+                //       window.location.reload();
+                //     });
+                // }
+              }
+
+              return reject({errors: json.errors, res})
+            });
         }
       });
   });

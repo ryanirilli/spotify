@@ -4,6 +4,8 @@ import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import {debounce} from './../utils/utils';
 
+import {getLocalStorageItem} from './../api/httpUtils'
+
 import Spotify from './../action-creators/spotify';
 import SpotifyArtistDetails from './../action-creators/spotify-artist-details';
 
@@ -50,7 +52,10 @@ function mapDispatchToProps(dispatch) {
     fetchSpotifyArtistAlbums: SpotifyArtistDetails.fetchArtistAlbums,
     resetSpotifyArtistDetails: SpotifyArtistDetails.resetArtistDetails,
     fetchSpotifyAlbumDetails: SpotifyArtistDetails.fetchAlbumDetails,
-    setSpotifyIsShowingArtistDetails: SpotifyArtistDetails.setIsShowingArtistDetails
+    fetchUserAndPlaylists: Spotify.fetchUserAndPlaylists,
+    setSpotifyIsShowingArtistDetails: SpotifyArtistDetails.setIsShowingArtistDetails,
+    setIsUserAuthenticated: Spotify.setIsUserAuthenticated,
+    setIsAuthenticated: Spotify.setIsAuthenticated
   }, dispatch);
 }
 
@@ -83,6 +88,12 @@ export const App = React.createClass({
   },
 
   componentWillMount() {
+    const userAccessToken = getLocalStorageItem('userAccessToken');
+    if(userAccessToken) {
+      this.loadInitialState();
+      return;
+    };
+
     if(!this.props.isSpotifyAuthenticated) {
       this.props.getSpotifyAccessToken();
     } else {
@@ -98,6 +109,10 @@ export const App = React.createClass({
 
   loadInitialState(query = this.props.location.query) {
     const {artistId, detailsArtistId} = query;
+
+    if (getLocalStorageItem('userAccessToken')) {
+      this.props.fetchUserAndPlaylists();
+    }
 
     if(artistId) {
       this.fetchRecs(artistId);
@@ -127,7 +142,6 @@ export const App = React.createClass({
   },
 
   render() {
-
     if(!this.props.spotifySelectedArtist.size || !this.props.isSpotifyAuthenticated) {
       return null;
     }

@@ -35,11 +35,12 @@
 
 .modal-palm__content {
   @extend .modal__content;
+  align-self: baseline;
   background: white;
   margin: 30px 0;
-  width: 85%;
-  display: table;
+  width: 92%;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.46);
+  border-radius: 3px;
 }
 
 .modal-palm__close {

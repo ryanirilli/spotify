@@ -1,7 +1,8 @@
 import { fromJS } from 'immutable';
+import {getLocalStorageItem} from './../api/httpUtils';
 
 const initialState = fromJS({
-  isAuthenticated: false,
+  isAuthenticated: Boolean(getLocalStorageItem('userAccessToken') || getLocalStorageItem('accessToken')),
   isUserAuthenticated: false,
   isFetchingRecs: false,
   searchResults: [],

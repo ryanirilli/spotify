@@ -8,7 +8,7 @@ const cookieParser = require('cookie-parser');
 
 const port          = 8888;
 const stateKey      = 'spotify_auth_state';
-const redirect_uri  = `http://spotworm.com/api/v1/spotify-callback`;
+const redirect_uri  = `http://localhost:8080/api/v1/spotify-callback`;
 const client_id     = process.env.SPOTIFY_CLIENT_ID;
 const client_secret = process.env.SPOTIFY_CLIENT_SECRET;
 
@@ -21,7 +21,7 @@ app.get('/api/v1/spotify-access-token', (req, res) => {
   const authOptions = {
     url: 'https://accounts.spotify.com/api/token',
     headers: { 'Authorization': 'Basic ' + (new Buffer(`${client_id}:${client_secret}`).toString('base64')) },
-    form: { grant_type: 'client_credentials' },
+    form: { grant_type: req.body.grantType || 'client_credentials' },
     json: true
   };
 
@@ -70,7 +70,7 @@ app.get('/api/v1/spotify-callback', (req, res) => {
         const access_token = body.access_token;
         const refresh_token = body.refresh_token;
         const tokens = querystring.stringify({ access_token, refresh_token });
-        res.redirect(`http://spotworm.com/spotify-login-success?${tokens}`);
+        res.redirect(`http://localhost:8080/spotify-login-success?${tokens}`);
       } else {
         res.status(422).send(JSON.stringify({err: 'invalid token'}));
       }

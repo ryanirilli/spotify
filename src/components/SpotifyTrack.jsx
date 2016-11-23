@@ -18,6 +18,12 @@ export default React.createClass({
     }
   },
 
+  componentWillReceiveProps(nextProps) {
+    if(!this.props.isSpotifyUserAuthenticated && nextProps.isSpotifyUserAuthenticated) {
+      this.setState({isShowingPalmAddToPlaylistUi: true});
+    }
+  },
+
   componentDidUpdate(prevProps, prevState) {
     if(this.state.isPalmSelectedTrack && !prevState.isPalmSelectedTrack) {
       this.playPreview();
@@ -80,6 +86,32 @@ export default React.createClass({
     this.pausePreview();
     this.setState({isShowingPalmPreview: false});
     this.props.setSpotifyIsShowingArtistDetails(false);
+    document.getElementsByTagName('html')[0].style.overflowY = 'auto';
+  },
+
+  renderUserPlaylists() {
+    const playlists = this.props.spotifyUserPlaylists.get('items') || [];
+    return <div>
+      <h3 className="u-pl- u-mb0">Add Track To Playlist</h3>
+      <ul className="list-bare">
+        {playlists.map(playlist => this.renderPlaylist(playlist))}
+      </ul>
+    </div>
+  },
+
+  renderPlaylist(playlist) {
+    const playlistId = playlist.get('id');
+    return <li key={playlistId}
+               onTouchStart={e => this.addTrackToPlaylist(playlistId)}
+               ref={playlistId}
+               className={`u-ph- u-pv-- text-truncate`}>
+      {playlist.get('name')}
+    </li>
+  },
+
+  addTrackToPlaylist(playlistId) {
+    const {track} = this.props;
+    this.props.addSpotifyTrackToPLaylist(track.get('uri'), playlistId);
   },
 
   renderPalmPreview() {
@@ -93,9 +125,9 @@ export default React.createClass({
     const palmPlayerStateIconClass = isPlayingPreview ? 'icon-pause' : 'icon-play';
 
     return <div className="modal-palm">
-      <div className="modal-palm__content u-p--">
+      <div className="modal-palm__content u-pv--">
         <div className="modal-palm__close u-mb--">
-          <i className="icon-close" onClick={this.closePalmPreview} />
+          <i className="icon-close u-mr-" onClick={this.closePalmPreview} />
         </div>
         <div className="spotify-track-preview-palm">
           <div className="spotify-track-preview-palm__player-icon">
@@ -116,10 +148,12 @@ export default React.createClass({
               <div className="u--mt--">{trackName}</div>
             </div>
 
-            <button className="btn btn--small btn--pill u-1/1" onClick={this.onClickAddToPlaylistPalm}>
-              <i className="icon-spotify"/> Add to playlist
-            </button>
-
+            {this.state.isSpotifyUserAuthenticated ? this.renderUserPlaylists() :
+              <div className="u-ph u-pb-">
+                <button className="btn btn--small btn--pill u-1/1" onClick={this.onClickAddToPlaylistPalm}>
+                  <i className="icon-spotify"/> Add to playlist
+                </button>
+              </div>}
           </div>
         </div>
       </div>
@@ -128,7 +162,7 @@ export default React.createClass({
 
   onClickAddToPlaylistPalm() {
     if(this.props.isSpotifyUserAuthenticated) {
-      this.setState({isShowingPalmAddToPlaylistUi: true})
+      this.setState({isShowingPalmAddToPlaylistUi: true});
     } else {
       window.open('/api/v1/spotify-login');
     }
@@ -156,6 +190,7 @@ export default React.createClass({
   togglePalmPreview(e) {
     e.preventDefault();
     e.stopPropagation();
+    document.getElementsByTagName('html')[0].style.overflowY = 'hidden';
     if (this.state.initialScrollPosition !== document.body.scrollTop) {
       return;
     }

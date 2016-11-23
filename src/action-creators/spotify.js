@@ -29,6 +29,14 @@ export function setIsFetchingRecs(isFetchingRecs) {
   }
 }
 
+export function setAddToPlaylistStatus(trackId, status) {
+  return {
+    type: 'SET_ADD_TO_PLAYLIST_STATUS',
+    trackId,
+    status
+  }
+}
+
 export function resetSearch() {
   return {
     type: 'RESET_SPOTIFY_SEARCH'
@@ -127,7 +135,9 @@ export function fetchUserPlaylists() {
 export function addTrackToPlaylist(uri, playlistId) {
   return (dispatch, getState) => {
     const userId = getState().spotify.getIn(['user','id']);
-    Spotify.addTrackToPlaylist(uri, userId, playlistId);
+    Spotify.addTrackToPlaylist(uri, userId, playlistId).then(() => {
+      debugger;
+    });
   }
 }
 
@@ -151,5 +161,6 @@ export default {
   fetchUserPlaylists,
   fetchUser,
   fetchUserAndPlaylists,
-  addTrackToPlaylist
+  addTrackToPlaylist,
+  setIsAuthenticated
 }

@@ -40,6 +40,7 @@ export default React.createClass({
       isPalmFocused: device === 'palm',
       isShowingResults: Boolean(this.props.results.size)
     });
+
   },
 
   onBlur() {
