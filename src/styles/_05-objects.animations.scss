@@ -11,6 +11,10 @@
   @include animation('pulse 700ms ease infinite alternate');
 }
 
+.slide-up {
+  @include animation('slide-up 400ms ease forwards');
+}
+
 @include keyframes(slide-down) {
   0% {
     top: -50px;
@@ -31,5 +35,14 @@
   }
   100% {
     @include vendor(transform, scale(1));
+  }
+}
+
+@include keyframes(slide-up) {
+  0% {
+    top: 100vh;
+  }
+  100% {
+    top: 0vh;
   }
 }

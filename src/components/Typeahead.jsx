@@ -67,7 +67,7 @@ export default React.createClass({
     const shouldShowResults = this.props.results.size && (this.state.isPalmFocused || this.state.isShowingResults);
     const {isPalmFocused} = this.state;
     return <div ref="typeahead"
-                className={`typeahead typeahead--${this.props.theme || 'main'} ${shouldShowResults ? 'typeahead--has-results' : ''} ${isPalmFocused ? 'typeahead--palm-focused' : ''}`}
+                className={`typeahead typeahead--${this.props.theme || 'main'} ${shouldShowResults ? 'typeahead--has-results' : ''} ${isPalmFocused ? 'typeahead--palm-focused slide-up' : ''}`}
                 onKeyDown={this.onKeydown}>
       {isPalmFocused && this.renderPalmClose()}
       <input ref="typeaheadInput"

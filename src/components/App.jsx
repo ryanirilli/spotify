@@ -99,7 +99,7 @@ export const App = React.createClass({
     if(!this.props.isSpotifyAuthenticated) {
       this.props.getSpotifyAccessToken();
     } else {
-
+      this.loadInitialState();
     }
   },
 

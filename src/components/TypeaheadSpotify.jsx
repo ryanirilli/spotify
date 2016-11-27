@@ -35,7 +35,7 @@ export default React.createClass({
       <div className="media media--small u-mv-- u-pl--">
         {this.renderSpotifySearchResultImg(thumb.get('url'))}
         <div className="media__body">
-          <p className="u-mt0">
+          <p className="u-mt0 u-pl- u-pt-">
             {result.get('name')}
           </p>
         </div>
