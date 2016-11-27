@@ -32,7 +32,9 @@ function mapStateToProps(state) {
     spotifyArtistDetails: state.spotifyArtistDetails.get('artist'),
     spotifyArtistAlbums: state.spotifyArtistDetails.get('albums'),
     spotifyAlbumDetails: state.spotifyAlbumDetails.get('album'),
-    isSpotifyShowingArtistDetails: state.spotifyArtistDetails.get('isShowingArtistDetails')
+    isSpotifyShowingArtistDetails: state.spotifyArtistDetails.get('isShowingArtistDetails'),
+    spotifyAddedTracks: state.spotify.get('addedTracks'),
+    spotifyUser: state.spotify.get('user')
   };
 }
 
@@ -97,7 +99,7 @@ export const App = React.createClass({
     if(!this.props.isSpotifyAuthenticated) {
       this.props.getSpotifyAccessToken();
     } else {
-      this.loadInitialState();
+
     }
   },
 
@@ -145,9 +147,12 @@ export const App = React.createClass({
     if(!this.props.spotifySelectedArtist.size || !this.props.isSpotifyAuthenticated) {
       return null;
     }
+
+    const shouldRenderLoading = this.props.spotifyRecs.size && this.props.isFetchingSpotifyRecs;
+
     return <div className="app-container">
 
-      {this.props.isFetchingSpotifyRecs ? this.renderLoading() : null}
+      {shouldRenderLoading ? this.renderLoading() : null}
 
       <div className="fixed-top bg-orange">
         <div className="section-main u-ph- u-pb-">

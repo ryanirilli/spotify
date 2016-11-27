@@ -1,15 +1,16 @@
-import { fromJS } from 'immutable';
+import { Map, fromJS } from 'immutable';
 import {getLocalStorageItem} from './../api/httpUtils';
 
 const initialState = fromJS({
-  isAuthenticated: Boolean(getLocalStorageItem('userAccessToken') || getLocalStorageItem('accessToken')),
-  isUserAuthenticated: false,
+  isAuthenticated: Boolean(getLocalStorageItem('accessToken')),
+  isUserAuthenticated: Boolean(getLocalStorageItem('userAccessToken')),
   isFetchingRecs: false,
   searchResults: [],
   recs: {},
   artist: {},
   user: {},
-  userPlaylists: {}
+  userPlaylists: {},
+  addedTracks: []
 });
 
 export default function(state = initialState, action = {}) {
@@ -20,6 +21,29 @@ export default function(state = initialState, action = {}) {
       return state.set('user', fromJS(action.user));
     case 'SET_SPOTIFY_USER_PLAYLISTS':
       return state.set('userPlaylists', fromJS(action.playlists));
+    case 'SET_ADDED_TRACK':
+      let addedTracks = state.get('addedTracks');
+      let playlist = addedTracks.find(item => item.get('playlistId') ===  action.playlistId);
+      const index = addedTracks.indexOf(playlist);
+
+      if (!playlist) {
+        playlist = fromJS({
+          playlistId: action.playlistId,
+          items: []
+        });
+      }
+
+      const items = playlist.get('items');
+      playlist = playlist.set('items', items.push(action.trackUri));
+
+      if (index > -1) {
+        addedTracks = addedTracks.update(index, oldPlaylist => playlist);
+      } else {
+        addedTracks = addedTracks.push(playlist);
+      }
+
+      return state.set('addedTracks', addedTracks);
+
     case 'SET_IS_FETCHING_RECS':
       return state.set('isFetchingRecs', action.isFetchingRecs);
     case 'SET_SPOTIFY_RECS':

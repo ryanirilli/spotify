@@ -132,12 +132,21 @@ export function fetchUserPlaylists() {
   }
 }
 
+export function setAddedTrack(playlistId, trackUri) {
+  return {
+    type: 'SET_ADDED_TRACK',
+    playlistId,
+    trackUri
+  }
+}
+
 export function addTrackToPlaylist(uri, playlistId) {
   return (dispatch, getState) => {
     const userId = getState().spotify.getIn(['user','id']);
-    Spotify.addTrackToPlaylist(uri, userId, playlistId).then(() => {
-      debugger;
-    });
+    Spotify.addTrackToPlaylist(uri, userId, playlistId)
+      .then(() => {
+        dispatch(setAddedTrack(playlistId, uri));
+      });
   }
 }
 

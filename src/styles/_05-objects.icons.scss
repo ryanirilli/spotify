@@ -23,6 +23,12 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.icon-check:before {
+  content: "\e906";
+}
+.icon-close:before {
+  content: "\e903";
+}
 .icon-pause:before {
   content: "\e904";
 }
@@ -38,13 +44,9 @@
 .icon-social:before {
   content: "\e901";
 }
-.icon-close:before {
-  content: "\e903";
-}
 .icon-folder-music:before {
   content: "\e902";
 }
 .icon-dots-three-horizontal:before {
   content: "\e900";
 }
-

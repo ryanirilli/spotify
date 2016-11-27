@@ -21,7 +21,7 @@ app.get('/api/v1/spotify-access-token', (req, res) => {
   const authOptions = {
     url: 'https://accounts.spotify.com/api/token',
     headers: { 'Authorization': 'Basic ' + (new Buffer(`${client_id}:${client_secret}`).toString('base64')) },
-    form: { grant_type: req.body.grantType || 'client_credentials' },
+    form: { grant_type: 'client_credentials' },
     json: true
   };
 
@@ -76,6 +76,24 @@ app.get('/api/v1/spotify-callback', (req, res) => {
       }
     });
   }
+});
+
+app.post('/api/v1/refresh', (req, res) => {
+  const {refresh_token} = req.body;
+  const opts = {
+    url: 'https://accounts.spotify.com/api/token',
+    json: true,
+    form: { refresh_token, grant_type: 'refresh_token' },
+    headers: { 'Authorization': 'Basic ' + (new Buffer(`${client_id}:${client_secret}`).toString('base64')) }
+  };
+  request.post(opts, (error, response, body) => {
+    if (!error && response.statusCode === 200) {
+      const access_token = body.access_token;
+      res.status(200).send(JSON.stringify({access_token}));
+    } else {
+      res.status(422).send(JSON.stringify({error: body.error}));
+    }
+  });
 });
 
 console.log(`Listening on ${port}`);

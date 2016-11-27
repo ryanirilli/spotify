@@ -39,7 +39,7 @@ export const Home = React.createClass({
         <div className="u-pv">
           <object className="block" type="image/svg+xml" data="/static/img/logo_spotworm_white.svg" width="165"></object>
         </div>
-        <div className="u-max-400px center u-pv+">
+        <div className="u-max-400px center u-pv+ palm-pv0">
           <h2 className="u-mv0">Enter your favorite music artist</h2>
           <TypeaheadSpotify device={this.props.device}
                             getSpotifyAccessToken={this.props.getSpotifyAccessToken}

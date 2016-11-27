@@ -1,6 +1,7 @@
 import React from 'react';
 import raf from 'raf';
 import ImgLoader from './ImgLoader.jsx!';
+import {List, Map} from 'immutable';
 
 export default React.createClass({
 
@@ -27,6 +28,13 @@ export default React.createClass({
   componentDidUpdate(prevProps, prevState) {
     if(this.state.isPalmSelectedTrack && !prevState.isPalmSelectedTrack) {
       this.playPreview();
+    }
+  },
+
+  componentWillUnmount() {
+    const {preview} = this.refs;
+    if (preview) {
+      preview.removeEventListener('ended', this.pausePreview);
     }
   },
 
@@ -90,21 +98,30 @@ export default React.createClass({
   },
 
   renderUserPlaylists() {
-    const playlists = this.props.spotifyUserPlaylists.get('items') || [];
+    const playlists = this.props.spotifyUserPlaylists.get('items') || List();
+    const userId = this.props.spotifyUser.get('id');
+    const ownedPlaylists = playlists.filter(playlist => playlist.getIn(['owner', 'id']) === userId);
     return <div>
       <h3 className="u-pl- u-mv0 bg-light-grey">Add Track To Playlist</h3>
       <ul className="bg-lightest-grey list-bare">
-        {playlists.map(playlist => this.renderPlaylist(playlist))}
+        {ownedPlaylists.map(playlist => this.renderPlaylist(playlist))}
       </ul>
     </div>
   },
 
   renderPlaylist(playlist) {
     const playlistId = playlist.get('id');
+    const {track} = this.props;
+    const addedTracks = this.props.spotifyAddedTracks;
+    const addedTrack = addedTracks.find(item => item.get('playlistId') === playlistId) || Map();
+    const items = addedTrack.get('items') || List();
+    const hasAddedTrack = items.includes(track.get('uri'));
+
     return <li key={playlistId}
                onTouchStart={e => this.addTrackToPlaylist(playlistId)}
                ref={playlistId}
-               className={`u-ph- u-pv-- text-truncate u-bb-light`}>
+               className={`u-ph- u-pv-- text-truncate u-bb-light ${hasAddedTrack ? 'list-item__success' : ''}`}>
+      {hasAddedTrack && <i className="icon-check u-pr--" />}
       {playlist.get('name')}
     </li>
   },
@@ -208,6 +225,7 @@ export default React.createClass({
     if (!isPalm || this.state.isPalmSelectedTrack) {
       const {preview} = this.refs;
       preview.play();
+      preview.addEventListener('ended', this.pausePreview);
       newState.playerProgress = raf(() => this.setProgressBar());
       if(isPalm) {
         newState.isShowingPalmPreview = true;
@@ -222,6 +240,7 @@ export default React.createClass({
   pausePreview() {
     const {preview} = this.refs;
     preview.pause();
+    preview.removeEventListener('ended', this.pausePreview);
     const {playerProgress} = this.state;
     raf.cancel(playerProgress);
     this.setState({isPlayingPreview: false});

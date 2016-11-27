@@ -35,32 +35,27 @@ export function request(url, opts) {
         }
 
         if (res.status > 400) {
-          return res.json()
-            .then(json => {
-              if (json.error.status === 401) {
-                // const refresh_token = getLocalStorageItem('userRefresh');
-                // if (refresh_token) {
-                //   const params = {
-                //     method: 'post',
-                //     grant_type: 'refresh_token',
-                //     mode: 'no-cors',
-                //     refresh_token
-                //   };
-                //   fetch('https://accounts.spotify.com/api/token', params)
-                //     .then(res => res.json())
-                //     .then(json => {
-                //       debugger;
-                //     }).catch(json => {
-                //       deleteLocalStorageItem('accessToken');
-                //       deleteLocalStorageItem('userAccessToken');
-                //       deleteLocalStorageItem('userRefresh');
-                //       window.location.reload();
-                //     });
-                // }
+          res.json().then(json => {
+            if (json.error.status === 401) {
+              const refresh_token = getLocalStorageItem('userRefresh');
+              if (refresh_token) {
+                const params = {
+                  method: 'POST',
+                  headers: {'Content-Type': 'application/json'},
+                  body: JSON.stringify({refresh_token})
+                };
+                fetch('/api/v1/refresh', params)
+                  .then(res => res.json())
+                  .then(json => {
+                    setLocalStorageItem('userAccessToken', json.access_token);
+                    request(url, opts).then(resolve);
+                  })
+                  .catch(reject);
               }
-
-              return reject({errors: json.errors, res})
-            });
+            } else {
+              reject({errors: json.errors, res});
+            }
+          });
         }
       });
   });
