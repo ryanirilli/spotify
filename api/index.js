@@ -8,7 +8,7 @@ const cookieParser = require('cookie-parser');
 
 const port          = 8888;
 const stateKey      = 'spotify_auth_state';
-const redirect_uri  = `http://localhost:8080/api/v1/spotify-callback`;
+const redirect_uri  = `http://sportworm.com/api/v1/spotify-callback`;
 const client_id     = process.env.SPOTIFY_CLIENT_ID;
 const client_secret = process.env.SPOTIFY_CLIENT_SECRET;
 
@@ -70,7 +70,7 @@ app.get('/api/v1/spotify-callback', (req, res) => {
         const access_token = body.access_token;
         const refresh_token = body.refresh_token;
         const tokens = querystring.stringify({ access_token, refresh_token });
-        res.redirect(`http://localhost:8080/spotify-login-success?${tokens}`);
+        res.redirect(`http://sportworm.com/spotify-login-success?${tokens}`);
       } else {
         res.status(422).send(JSON.stringify({err: 'invalid token'}));
       }
