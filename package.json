@@ -30,6 +30,7 @@
       "react-redux": "npm:react-redux@^4.4.5",
       "react-router": "npm:react-router@^2.3.0",
       "react-router-redux": "npm:react-router-redux@^4.0.2",
+      "react-tappable": "npm:react-tappable@^0.8.4",
       "redux": "npm:redux@^3.5.1",
       "redux-thunk": "npm:redux-thunk@^2.0.1",
       "waypoints": "npm:waypoints@^4.0.0",

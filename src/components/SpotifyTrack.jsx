@@ -1,7 +1,9 @@
 import React from 'react';
+import Tappable from 'react-tappable';
 import raf from 'raf';
 import ImgLoader from './ImgLoader.jsx!';
 import {List, Map} from 'immutable';
+
 
 export default React.createClass({
 
@@ -117,13 +119,14 @@ export default React.createClass({
     const items = addedTrack.get('items') || List();
     const hasAddedTrack = items.includes(track.get('uri'));
 
-    return <li key={playlistId}
-               onTouchStart={e => this.addTrackToPlaylist(playlistId)}
-               ref={playlistId}
-               className={`u-ph- u-pv-- text-truncate u-bb-light ${hasAddedTrack ? 'list-item__success' : ''}`}>
-      {hasAddedTrack && <i className="icon-check u-pr--" />}
-      {playlist.get('name')}
-    </li>
+    return <Tappable onTap={e => this.addTrackToPlaylist(playlistId)}
+                     key={playlistId}
+                     ref={playlistId}
+                     component='li'
+                     className={`u-ph- u-pv-- text-truncate u-bb-light ${hasAddedTrack ? 'list-item__success' : ''}`}>
+        {hasAddedTrack && <i className="icon-check u-pr--" />}
+        {playlist.get('name')}
+    </Tappable>
   },
 
   addTrackToPlaylist(playlistId) {

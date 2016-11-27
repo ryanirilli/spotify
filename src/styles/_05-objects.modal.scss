@@ -9,6 +9,7 @@
   background: rgba(0,0,0, 0.5);
   z-index: 9999;
   overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
 }
 .modal__content {
   width: 600px;
