@@ -2,16 +2,26 @@
 <html lang="en">
     <head>
         <meta charset="utf-8">
-        <title>Spotworm - music discovery</title>
+        <title>Spotworm - a better music discovery app</title>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"/>
+        <meta name="description" content="Search for your favorite artist and get a list of related tracks. Preview songs and add them to your Spotify playlists">
         <link rel="stylesheet" href="/static/css/{{appCss}}">
     </head>
     <body>
         <div id="app"></div>
         {{#if isProdBuild}}
         <script src="/static/js/{{appJs}}"></script>
+        <script>
+            (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+            })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+            ga('create', 'UA-88059496-1', 'auto');
+            ga('send', 'pageview');
+        </script>
         {{else}}
         <script src="/jspm_packages/system.js"></script>
         <script src="/config.js"></script>
