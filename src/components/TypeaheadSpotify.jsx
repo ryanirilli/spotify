@@ -44,7 +44,7 @@ export default React.createClass({
   },
 
   renderSpotifySearchResultImg(url) {
-    const commonClasses = "media__img u-50px";
+    const commonClasses = "media__img u-50px u-br-circle";
     const style = {
       background: 'rgba(0, 0, 0, 0.05)',
       height: '50px'

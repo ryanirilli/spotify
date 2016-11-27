@@ -252,7 +252,7 @@ export const App = React.createClass({
 
   renderTracks() {
     const isPalm = this.props.device === 'palm';
-    return <div className={`spotify-tracks layout ${isPalm ? 'layout--small' : ''} u-mt`}>
+    return <div className={`spotify-tracks layout ${isPalm ? 'layout--small' : ''} u-mt u-mb++`}>
       {this.props.spotifyRecs.get('tracks').map(track => this.renderTrack(track))}
     </div>
   },
@@ -401,10 +401,14 @@ export const App = React.createClass({
   },
 
   handleArtistSelect(artist) {
+    const artistId = artist.get('id');
     this.props.resetSpotify();
     this.setState(this.getInitialState());
     this.props.setSpotifyArtist(artist);
-    this.fetchRecs(artist.get('id'));
+    const {location} = this.props;
+    const query = {...location.query, artistId};
+    this.props.push({...location, query});
+    this.fetchRecs(artistId);
   },
 
   handleTrackDrop(e, playlistId) {

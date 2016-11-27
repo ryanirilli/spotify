@@ -33,7 +33,10 @@ $spotify-details-transition-duration: 250ms;
 
 .spotify-track__details {
   display: block;
-  @include vendor(transition, opacity $spotify-details-transition-duration ease);
+  @include media-query(desk) {
+    @include vendor(transform, translateY(-100%));
+  }
+  @include vendor(transition, transform $spotify-details-transition-duration ease);
   background: white;
   top: 0;
   left: 0;
@@ -45,9 +48,12 @@ $spotify-details-transition-duration: 250ms;
   }
 }
 
-.spotify-track:hover .spotify-track__details,
 .spotify-track:hover .spotify-track__more {
   opacity: 1;
+}
+
+.spotify-track:hover .spotify-track__details {
+  @include vendor(transform, translateY(0%));
 }
 
 .spotify-track__more {
@@ -80,7 +86,6 @@ $spotify-details-transition-duration: 250ms;
 .spotify-track--main {
   .spotify-track__details {
     position: absolute;
-    opacity: 0;
   }
 }
 

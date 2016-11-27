@@ -163,7 +163,7 @@ export default React.createClass({
                    style={{width: `${progressBarWidth}%`}}/>
             </div>
 
-            <div className="text-center u-pv--">
+            <div className="text-center u-pv">
               <h3 className="u-mv0">{artistName}</h3>
               <div className="u--mt--">{trackName}</div>
             </div>
