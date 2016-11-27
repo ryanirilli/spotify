@@ -18,6 +18,7 @@ export default React.createClass({
 
   render() {
     return <Typeahead device={this.props.device}
+                      isLoadingResults={this.props.isLoadingResults}
                       theme={this.props.theme}
                       placeholder={this.props.placeholder}
                       fetchData={this.searchSpotifyArtist}

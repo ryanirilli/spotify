@@ -84,9 +84,19 @@ export default React.createClass({
   },
   
   renderResults() {
-    return [this.renderCloseMask(), <ul key="typeaheadResults" className="typeahead__results list-bare">
+    return [this.renderCloseMask(), this.renderResultsList()]
+  },
+
+  renderResultsList() {
+    if (this.props.isLoadingResults) {
+      return <div key="typeaheadIsLoading" className="u-pl-">
+        <div className="sp sp-wave"></div>
+      </div>
+    }
+
+    return <ul key="typeaheadResults" className="typeahead__results list-bare">
       {this.props.results.map((result, i) => this.renderResult(result, i))}
-    </ul>]
+    </ul>
   },
   
   renderResult(result, i) {

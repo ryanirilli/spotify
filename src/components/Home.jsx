@@ -6,13 +6,13 @@ import {push} from 'react-router-redux';
 
 import Spotify from './../action-creators/spotify';
 import TypeaheadSpotify from './TypeaheadSpotify.jsx!';
-import UnsplashPhoto from './UnsplashPhoto.jsx!';
 
 function mapStateToProps(state) {
   return {
     device: state.app.get('device'),
     isSpotifyAuthenticated: state.spotify.get('isAuthenticated'),
-    spotifySearchResults: state.spotify.get('searchResults')
+    spotifySearchResults: state.spotify.get('searchResults'),
+    spotifyIsLoadingSearchResults: state.spotify.get('isLoadingSearchResults')
   };
 }
 
@@ -42,6 +42,7 @@ export const Home = React.createClass({
         <div className="u-max-400px center u-pv+ palm-pv0">
           <h2 className="u-mv0">Enter your favorite music artist</h2>
           <TypeaheadSpotify device={this.props.device}
+                            isLoadingResults={this.props.spotifyIsLoadingSearchResults}
                             getSpotifyAccessToken={this.props.getSpotifyAccessToken}
                             isSpotifyAuthenticated={this.props.isSpotifyAuthenticated}
                             spotifySearch={this.props.spotifySearch}

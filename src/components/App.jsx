@@ -24,6 +24,7 @@ function mapStateToProps(state) {
     device: state.app.get('device'),
     isSpotifyAuthenticated: state.spotify.get('isAuthenticated'),
     spotifyRecs: state.spotify.get('recs'),
+    spotifyIsLoadingSearchResults: state.spotify.get('isLoadingSearchResults'),
     spotifySearchResults: state.spotify.get('searchResults'),
     spotifySelectedArtist: state.spotify.get('artist'),
     isFetchingSpotifyRecs: state.spotify.get('isFetchingRecs'),
@@ -318,6 +319,7 @@ export const App = React.createClass({
         </div>
         <div className="layout__item u-3/4">
           <TypeaheadSpotify getSpotifyAccessToken={this.props.getSpotifyAccessToken}
+                            isLoadingResults={this.props.spotifyIsLoadingSearchResults}
                             device={this.props.device}
                             isSpotifyAuthenticated={this.props.isSpotifyAuthenticated}
                             spotifySearch={this.props.spotifySearch}

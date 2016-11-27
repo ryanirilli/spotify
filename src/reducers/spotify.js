@@ -5,6 +5,7 @@ const initialState = fromJS({
   isAuthenticated: Boolean(getLocalStorageItem('accessToken')),
   isUserAuthenticated: Boolean(getLocalStorageItem('userAccessToken')),
   isFetchingRecs: false,
+  isLoadingSearchResults: true,
   searchResults: [],
   recs: {},
   artist: {},
@@ -48,6 +49,8 @@ export default function(state = initialState, action = {}) {
       return state.set('isFetchingRecs', action.isFetchingRecs);
     case 'SET_SPOTIFY_RECS':
       return state.set('recs', fromJS(action.recs));
+    case 'SET_IS_LOADING_SPOTIFY_SEARCH_RESULTS':
+      return state.set('isLoadingSearchResults', action.isLoading);
     case 'SET_SPOTIFY_SEARCH_RESULTS':
       return state.set('searchResults', fromJS(action.spotifySearchResults));
     case 'RESET_SPOTIFY_SEARCH':

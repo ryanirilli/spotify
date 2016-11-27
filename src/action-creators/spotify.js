@@ -29,14 +29,6 @@ export function setIsFetchingRecs(isFetchingRecs) {
   }
 }
 
-export function setAddToPlaylistStatus(trackId, status) {
-  return {
-    type: 'SET_ADD_TO_PLAYLIST_STATUS',
-    trackId,
-    status
-  }
-}
-
 export function resetSearch() {
   return {
     type: 'RESET_SPOTIFY_SEARCH'
@@ -87,12 +79,20 @@ export function getAccessToken() {
   }
 }
 
+export function setIsLoadingSpotifySearchResults(isLoading) {
+  return {
+    type: 'SET_IS_LOADING_SPOTIFY_SEARCH_RESULTS',
+    isLoading
+  }
+}
 
 export function search(artist) {
   return dispatch => {
+    dispatch(setIsLoadingSpotifySearchResults(true));
     Spotify.search({q: artist, type: 'artist'})
       .then(payload => {
         dispatch(setSpotifySearchResults(payload.json.artists.items));
+        dispatch(setIsLoadingSpotifySearchResults(false));
       });
   }
 }
