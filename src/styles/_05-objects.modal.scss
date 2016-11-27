@@ -46,8 +46,12 @@
 
 .modal-palm__close {
   @extend .clearfix;
+  position: absolute;
+  z-index: 1;
+  right: 0;
+  background: white;
   .icon-close {
-    font-size: 22px;
+    font-size: 30px;
     float: right;
   }
 }

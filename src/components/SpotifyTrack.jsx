@@ -154,9 +154,9 @@ export default React.createClass({
     const palmPlayerStateIconClass = isPlayingPreview ? 'icon-pause' : 'icon-play';
 
     return <div className="modal-palm">
-      <div className="modal-palm__content u-pv--">
+      <div className="modal-palm__content">
         <div className="modal-palm__close u-mb--">
-          <i className="icon-close u-mr-" onClick={this.closePalmPreview} />
+          <i className="icon-close u-p--" onClick={this.closePalmPreview} />
         </div>
         <div className="spotify-track-preview-palm">
           <div className="spotify-track-preview-palm__player-icon">
