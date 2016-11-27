@@ -111,15 +111,18 @@ export default React.createClass({
     </div>
   },
 
-  renderPlaylist(playlist) {
-    const playlistId = playlist.get('id');
+  getHasAddedTrackToPlaylist(playlistId) {
     const {track} = this.props;
     const addedTracks = this.props.spotifyAddedTracks;
     const addedTrack = addedTracks.find(item => item.get('playlistId') === playlistId) || Map();
     const items = addedTrack.get('items') || List();
-    const hasAddedTrack = items.includes(track.get('uri'));
+    return items.includes(track.get('uri'));
+  },
 
-    return <Tappable onTap={e => this.addTrackToPlaylist(playlistId)}
+  renderPlaylist(playlist) {
+    const playlistId = playlist.get('id');
+    const hasAddedTrack = this.getHasAddedTrackToPlaylist(playlistId);
+    return <Tappable onTap={e => this.toggleTrackInPlaylist(playlistId)}
                      key={playlistId}
                      ref={playlistId}
                      component='li'
@@ -129,9 +132,15 @@ export default React.createClass({
     </Tappable>
   },
 
-  addTrackToPlaylist(playlistId) {
+  toggleTrackInPlaylist(playlistId) {
     const {track} = this.props;
-    this.props.addSpotifyTrackToPLaylist(track.get('uri'), playlistId);
+    const uri = track.get('uri');
+    const hasAddedTrack = this.getHasAddedTrackToPlaylist(playlistId);
+    if (hasAddedTrack) {
+      this.props.removeSpotifyTrackFromPlaylist(uri, playlistId);
+    } else {
+      this.props.addSpotifyTrackToPlaylist(uri, playlistId);
+    }
   },
 
   renderPalmPreview() {

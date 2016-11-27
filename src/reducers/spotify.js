@@ -22,9 +22,10 @@ export default function(state = initialState, action = {}) {
       return state.set('user', fromJS(action.user));
     case 'SET_SPOTIFY_USER_PLAYLISTS':
       return state.set('userPlaylists', fromJS(action.playlists));
-    case 'SET_ADDED_TRACK':
+
+      case 'SET_ADDED_TRACK': {
       let addedTracks = state.get('addedTracks');
-      let playlist = addedTracks.find(item => item.get('playlistId') ===  action.playlistId);
+      let playlist = addedTracks.find(item => item.get('playlistId') === action.playlistId);
       const index = addedTracks.indexOf(playlist);
 
       if (!playlist) {
@@ -44,6 +45,14 @@ export default function(state = initialState, action = {}) {
       }
 
       return state.set('addedTracks', addedTracks);
+    }
+
+    case 'REMOVE_ADDED_TRACK': {
+      let addedTracks = state.get('addedTracks');
+      let playlist = addedTracks.find(item => item.get('playlistId') ===  action.playlistId);
+      const index = addedTracks.indexOf(playlist);
+      return state.set('addedTracks', addedTracks.remove(index));
+    }
 
     case 'SET_IS_FETCHING_RECS':
       return state.set('isFetchingRecs', action.isFetchingRecs);

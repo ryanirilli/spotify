@@ -49,7 +49,8 @@ function mapDispatchToProps(dispatch) {
     setSpotifyArtist: Spotify.setArtist,
     resetSpotify: Spotify.reset,
     spotifyLogin: Spotify.login,
-    addSpotifyTrackToPLaylist: Spotify.addTrackToPlaylist,
+    addSpotifyTrackToPlaylist: Spotify.addTrackToPlaylist,
+    removeSpotifyTrackFromPlaylist: Spotify.removeTrackFromPlaylist,
     fetchSpotifyArtist: SpotifyArtistDetails.fetchArtistDetails,
     fetchSpotifyArtistAlbums: SpotifyArtistDetails.fetchArtistAlbums,
     resetSpotifyArtistDetails: SpotifyArtistDetails.resetArtistDetails,
@@ -419,7 +420,7 @@ export const App = React.createClass({
     const track = JSON.parse(e.dataTransfer.getData('track'));
     const {uri} = track;
     const node = this.refs[playlistId];
-    this.props.addSpotifyTrackToPLaylist(uri, playlistId);
+    this.props.addSpotifyTrackToPlaylist(uri, playlistId);
     node.classList.remove('droppable--hover');
   },
 

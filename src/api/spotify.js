@@ -33,6 +33,16 @@ export function addTrackToPlaylist(uri, userId, playlistId) {
   return request(`${baseUrl}/users/${userId}/playlists/${playlistId}/tracks?uris=${uri}`, {method: 'post'});
 }
 
+export function removeTrackFromPlaylist(uri, userId, playlistId) {
+  const params = {
+    method: 'delete',
+    body: JSON.stringify({
+      tracks: [{uri}]
+    })
+  };
+  return request(`${baseUrl}/users/${userId}/playlists/${playlistId}/tracks`, params);
+}
+
 export function fetchArtist(artistId) {
   return request(`${baseUrl}/artists/${artistId}`);
 }
@@ -51,6 +61,7 @@ export default {
   getRecs,
   search,
   addTrackToPlaylist,
+  removeTrackFromPlaylist,
   fetchUser,
   fetchUserPlaylists,
   fetchArtist,
