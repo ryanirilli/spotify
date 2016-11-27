@@ -3,6 +3,7 @@ import {replace, push} from 'react-router-redux';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import {debounce} from './../utils/utils';
+import {List} from 'immutable';
 
 import {getLocalStorageItem} from './../api/httpUtils'
 
@@ -16,8 +17,6 @@ import TypeaheadSpotify from './TypeaheadSpotify.jsx!';
 import Waypoint from './Waypoint.jsx!';
 import Modal from './Modal.jsx!';
 import ImgLoader from './ImgLoader.jsx!';
-
-import {List, Map} from 'immutable';
 
 function mapStateToProps(state) {
   return {
@@ -230,10 +229,12 @@ export const App = React.createClass({
   },
 
   renderUserPlaylists() {
-    const playlists = this.props.spotifyUserPlaylists.get('items') || [];
+    const playlists = this.props.spotifyUserPlaylists.get('items') || List();
+    const userId = this.props.spotifyUser.get('id');
+    const ownedPlaylists = playlists.filter(playlist => playlist.getIn(['owner', 'id']) === userId);
     return <div>
       <ul className="list-bare list-hover-main list-short">
-        {playlists.map(playlist => this.renderPlaylist(playlist))}
+        {ownedPlaylists.map(playlist => this.renderPlaylist(playlist))}
       </ul>
     </div>
   },

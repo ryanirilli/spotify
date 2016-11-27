@@ -23,16 +23,22 @@ import { setLocalStorageItem } from 'src/api/httpUtils';
 import 'waypoints';
 
 const routingMiddleware = routerMiddleware(browserHistory);
-const reducers = {routing: routerReducer, app, spotify, spotifyArtistDetails, spotifyAlbumDetails};
+
+const reducers = {
+  routing: routerReducer,
+  app,
+  spotify,
+  spotifyArtistDetails,
+  spotifyAlbumDetails
+}
+;
 const store = createStore(combineReducers(reducers), applyMiddleware(logger, thunk, routingMiddleware));
 const history = syncHistoryWithStore(browserHistory, store);
 
 import {getDevice} from 'src/constants/breakpoints';
-
 function setDevice() {
   store.dispatch({type: 'SET_DEVICE', device: getDevice()});
 }
-
 setDevice();
 const debouncedSetDevice = debounce(setDevice, 200);
 window.addEventListener('resize', debouncedSetDevice);

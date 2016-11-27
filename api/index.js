@@ -6,9 +6,10 @@ const querystring  = require('querystring');
 const bodyParser   = require('body-parser');
 const cookieParser = require('cookie-parser');
 
+const baseUrl       = process.env.NODE_ENV === 'production' ? 'http://spotworm.com' : 'http://localhost:8080';
 const port          = 8888;
 const stateKey      = 'spotify_auth_state';
-const redirect_uri  = `http://spotworm.com/api/v1/spotify-callback`;
+const redirect_uri  = `${baseUrl}/api/v1/spotify-callback`;
 const client_id     = process.env.SPOTIFY_CLIENT_ID;
 const client_secret = process.env.SPOTIFY_CLIENT_SECRET;
 
@@ -55,7 +56,7 @@ app.get('/api/v1/spotify-callback', (req, res) => {
   const storedState = req.cookies ? req.cookies[stateKey] : null;
 
   if (state === null || state !== storedState) {
-    res.status(422).send(JSON.stringify({all: 'bad'}));
+    res.status(422).send(JSON.stringify({err: 'state does not match'}));
   } else {
     res.clearCookie(stateKey);
     const opts = {
@@ -70,7 +71,7 @@ app.get('/api/v1/spotify-callback', (req, res) => {
         const access_token = body.access_token;
         const refresh_token = body.refresh_token;
         const tokens = querystring.stringify({ access_token, refresh_token });
-        res.redirect(`http://spotworm.com/spotify-login-success?${tokens}`);
+        res.redirect(`${baseUrl}/spotify-login-success?${tokens}`);
       } else {
         res.status(422).send(JSON.stringify({err: 'invalid token'}));
       }
