@@ -62,10 +62,7 @@
     "babel-preset-stage-0": "^6.3.13",
     "gulp-connect": "^3.2.2",
     "http-proxy-middleware": "^0.15.0",
-    "sass-jspm-importer": "0.0.6"
-  },
-  "devDependencies": {
-    "chai": "^3.4.1",
+    "sass-jspm-importer": "0.0.6",
     "karma-babel-preprocessor": "^6.0.1",
     "karma-chai": "^0.1.0",
     "karma-chai-sinon": "^0.1.5",
@@ -73,7 +70,10 @@
     "karma-jspm": "^2.0.2",
     "karma-mocha": "^0.2.1",
     "karma-mocha-reporter": "^1.1.5",
-    "karma-phantomjs-launcher": "^0.2.1",
+    "karma-phantomjs-launcher": "^0.2.1"
+  },
+  "devDependencies": {
+    "chai": "^3.4.1",
     "mocha": "^2.3.4",
     "phantomjs": "^1.9.19",
     "sinon": "^1.17.2",
