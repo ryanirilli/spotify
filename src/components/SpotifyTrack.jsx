@@ -154,7 +154,7 @@ export default React.createClass({
     const palmPlayerStateIconClass = isPlayingPreview ? 'icon-pause' : 'icon-play';
 
     return <div className="modal-palm">
-      <div className="modal-palm__content scale-up">
+      <div className="modal-palm__content">
         <div className="modal-palm__close u-mb--">
           <i className="icon-close u-p--" onClick={this.closePalmPreview} />
         </div>
