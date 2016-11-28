@@ -154,18 +154,22 @@ export default React.createClass({
     const palmPlayerStateIconClass = isPlayingPreview ? 'icon-pause' : 'icon-play';
 
     return <div className="modal-palm">
-      <div className="modal-palm__content">
+      <div className="modal-palm__content scale-up">
         <div className="modal-palm__close u-mb--">
           <i className="icon-close u-p--" onClick={this.closePalmPreview} />
         </div>
         <div className="spotify-track-preview-palm">
           <div className="spotify-track-preview-palm__player-icon">
-            <div className="text-center">
+            <div className="text-center fade-in-delayed">
               <i className={`${palmPlayerStateIconClass}`}
                  onTouchStart={this.togglePalmPreview} />
             </div>
           </div>
-          <ImgLoader src={trackImg}/>
+
+          <div className="spotify-track-preview-palm__album-img-container">
+            <ImgLoader src={trackImg} className="spotify-track-preview-palm__album-img" />
+          </div>
+
           <div className="spotify-track-preview-palm__body">
             <div className="progress-bar">
               <div className="progress-bar__progress"

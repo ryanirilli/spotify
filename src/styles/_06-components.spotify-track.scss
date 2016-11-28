@@ -70,6 +70,13 @@ $spotify-details-transition-duration: 250ms;
   cursor: pointer;
 }
 
+.spotify-track-preview-palm__album-img-container {
+  height: 345px;
+  .spotify-track-preview-palm__album-img {
+    height: 100%;
+  }
+}
+
 .spotify-track-preview-palm__player-icon {
   font-size: 195px;
   position: absolute;
