@@ -89,7 +89,7 @@ export default React.createClass({
 
   renderResultsList() {
     if (this.props.isLoadingResults) {
-      return <div key="typeaheadIsLoading" className="u-pl-">
+      return <div key="typeaheadIsLoading" className="typeahead__results">
         <div className="sp sp-wave"></div>
       </div>
     }

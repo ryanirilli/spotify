@@ -5,7 +5,7 @@ const initialState = fromJS({
   isAuthenticated: Boolean(getLocalStorageItem('accessToken')),
   isUserAuthenticated: Boolean(getLocalStorageItem('userAccessToken')),
   isFetchingRecs: false,
-  isLoadingSearchResults: true,
+  isLoadingSearchResults: false,
   searchResults: [],
   recs: {},
   artist: {},
