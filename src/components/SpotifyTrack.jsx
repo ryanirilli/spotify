@@ -39,7 +39,7 @@ export default React.createClass({
       this.playPreview();
     }
 
-    if (prevState.track.get('id') !== this.state.track.get('id')) {
+    if (this.state.isShowingPalmPreview && (prevState.track.get('id') !== this.state.track.get('id'))) {
       setTimeout(() => {
         this.setState({
           shouldTransitionOut: false,
@@ -72,7 +72,7 @@ export default React.createClass({
     const isPalm = device === 'palm';
     const artistName = track.getIn(['artists', 0, 'name']);
     const trackName = track.get('name');
-    return <Tappable component="div" moveThreshold={10} onTap={isPalm && this.togglePalmPreview}>
+    return <Tappable component="div" moveThreshold={10} onTap={isPalm ? this.togglePalmPreview : () => {}}>
       <div className={`spotify-track ${isPalm ? 'spotify-track--palm' : 'spotify-track--main'}`} draggable={isPalm}
            onMouseEnter={!isPalm && this.playPreview}
            onMouseLeave={!isPalm && this.pausePreview}
@@ -116,10 +116,10 @@ export default React.createClass({
     this.pausePreview();
     this.setState({
       isShowingPalmPreview: false,
-      track: this.props.track
+      track: this.props.track,
+      nextTrack: this.getNextTrack()
     });
     this.props.setSpotifyIsShowingArtistDetails(false);
-    document.getElementsByTagName('html')[0].style.overflowY = 'auto';
   },
 
   renderUserPlaylists() {
@@ -135,7 +135,7 @@ export default React.createClass({
   },
 
   getHasAddedTrackToPlaylist(playlistId) {
-    const {track} = this.props;
+    const {track} = this.state;
     const addedTracks = this.props.spotifyAddedTracks;
     const addedTrack = addedTracks.find(item => item.get('playlistId') === playlistId) || Map();
     const items = addedTrack.get('items') || List();
@@ -156,7 +156,7 @@ export default React.createClass({
   },
 
   toggleTrackInPlaylist(playlistId) {
-    const {track} = this.props;
+    const {track} = this.state;
     const uri = track.get('uri');
     const hasAddedTrack = this.getHasAddedTrackToPlaylist(playlistId);
     if (hasAddedTrack) {
@@ -255,7 +255,7 @@ export default React.createClass({
 
       {isSwiping && <div className="modal-palm__content-2" style={nextTrackStyle}>
         <div className="modal-palm__close u-mb--">
-          <i className="icon-close u-p--" onClick={this.closePalmPreview} />
+          <Tappable component="i" stopPropagation={true} className="icon-close u-p--" onTap={this.closePalmPreview} />
         </div>
 
         <div className="spotify-track-preview-palm">
@@ -298,7 +298,7 @@ export default React.createClass({
            onTransitionEnd={shouldTransitionOut && this.onModalTransitionEnd}>
 
         <div className="modal-palm__close u-mb--">
-          <i className="icon-close u-p--" onClick={this.closePalmPreview} />
+          <Tappable component="i" stopPropagation={true} className="icon-close u-p--" onTap={this.closePalmPreview} />
         </div>
 
         <div className="spotify-track-preview-palm">
@@ -366,11 +366,6 @@ export default React.createClass({
   togglePalmPreview(e) {
     e.preventDefault();
     e.stopPropagation();
-    // document.getElementsByTagName('html')[0].style.overflowY = 'hidden';
-    // if (this.state.initialScrollPosition !== document.body.scrollTop) {
-    //   return;
-    // }
-
     if(this.state.isPlayingPreview) {
       this.pausePreview();
     } else {
