@@ -305,9 +305,9 @@ export default React.createClass({
           <div className="spotify-track-preview-palm__album-img-container">
             <ImgLoader src={trackImg} className="spotify-track-preview-palm__album-img" />
             <div className="spotify-track-preview-palm__player-icon">
-              <div className="text-center fade-in-delayed"
-                   onTouchStart={this.togglePalmPreview}>
-                <i className={`${palmPlayerStateIconClass}`} />
+              <div className="text-center fade-in-delayed">
+                <i className={`${palmPlayerStateIconClass}`}
+                   onTouchStart={this.togglePalmPreview} />
               </div>
             </div>
           </div>
