@@ -6,7 +6,7 @@ const querystring  = require('querystring');
 const bodyParser   = require('body-parser');
 const cookieParser = require('cookie-parser');
 
-const baseUrl       = process.env.NODE_ENV === 'production' ? 'http://spotworm.com' : 'http://localhost:8080';
+const baseUrl       = process.env.NODE_ENV === 'production' ? 'http://spotworm.com' : 'http://10.0.0.191:8080';
 const port          = 8888;
 const stateKey      = 'spotify_auth_state';
 const redirect_uri  = `${baseUrl}/api/v1/spotify-callback`;

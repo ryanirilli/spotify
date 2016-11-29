@@ -32,6 +32,7 @@
 
 .modal-palm {
   @extend .modal;
+  height: 100%;
 }
 
 .modal-palm__content {
@@ -42,6 +43,16 @@
   width: 92%;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.46);
   border-radius: 3px;
+  left: 0;
+  overflow: hidden;
+}
+
+.modal-palm__content-2 {
+  @extend .modal-palm__content;
+  position: absolute;
+  left: 4%;
+  opacity: 0;
+  @include vendor(transform, scale(0.9));
 }
 
 .modal-palm__close {

@@ -53,7 +53,11 @@ export function request(url, opts) {
                   .catch(reject);
               }
             } else {
-              reject({errors: json.errors, res});
+              request('/api/v1/spotify-access-token')
+                .then(data => {
+                  setLocalStorageItem('accessToken', data.json.access_token);
+                  request(url, opts).then(resolve);
+                });
             }
           });
         }

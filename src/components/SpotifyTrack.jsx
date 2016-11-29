@@ -9,6 +9,8 @@ export default React.createClass({
 
   getInitialState() {
     return {
+      track: this.props.track,
+      nextTrack: this.getNextTrack(),
       playerProgress: null,
       progressBarWidth: 0,
       isImgLoaded: false,
@@ -17,7 +19,12 @@ export default React.createClass({
       isShowingPalmAddToPlaylistUi: false,
       isPalmSelectedTrack: false,
       isShowingPalmPreview: false,
-      initialScrollPosition: 0
+      initialScrollPosition: 0,
+      palmModalSlide: null,
+      palmModalLeft: 0,
+      isSwiping: false,
+      shouldTransitionOut: false,
+      wasPlayingBeforeSwipe: false
     }
   },
 
@@ -30,6 +37,21 @@ export default React.createClass({
   componentDidUpdate(prevProps, prevState) {
     if(this.state.isPalmSelectedTrack && !prevState.isPalmSelectedTrack) {
       this.playPreview();
+    }
+
+    if (prevState.track.get('id') !== this.state.track.get('id')) {
+      setTimeout(() => {
+        this.setState({
+          shouldTransitionOut: false,
+          nextTrack: this.getNextTrack(this.state.track),
+          palmModalSlide: null,
+          palmModalLeft: 0,
+          isSwiping: false
+        });
+        if (this.state.wasPlayingBeforeSwipe) {
+          this.playPreview();
+        }
+      }, 100);
     }
   },
 
@@ -50,13 +72,11 @@ export default React.createClass({
     const isPalm = device === 'palm';
     const artistName = track.getIn(['artists', 0, 'name']);
     const trackName = track.get('name');
-    return <div>
+    return <Tappable component="div" moveThreshold={10} onTap={isPalm && this.togglePalmPreview}>
       <div className={`spotify-track ${isPalm ? 'spotify-track--palm' : 'spotify-track--main'}`} draggable={isPalm}
            onMouseEnter={!isPalm && this.playPreview}
            onMouseLeave={!isPalm && this.pausePreview}
-           onDragStart={!isPalm && this.onDragStart}
-           onTouchStart={isPalm && this.setInitialScrollPosition}
-           onTouchEnd={isPalm && this.togglePalmPreview}>
+           onDragStart={!isPalm && this.onDragStart}>
         <div className="spotify-track__details">
           <div>
             <h3 className="spotify-track__title text-truncate">
@@ -74,7 +94,7 @@ export default React.createClass({
 
         {(!isPalm || isPalmSelectedTrack)  && <audio className="spotify-track__preview"
                ref="preview"
-               src={track.get('preview_url')}/>}
+               src={isPalm ? this.state.track.get('preview_url') : track.get('preview_url')}/>}
 
         <div className="spotify-track__progress">
           <div className="spotify-track__progress-bar"
@@ -89,12 +109,15 @@ export default React.createClass({
 
       {isShowingPalmPreview && this.renderPalmPreview()}
 
-    </div>
+    </Tappable>
   },
 
   closePalmPreview() {
     this.pausePreview();
-    this.setState({isShowingPalmPreview: false});
+    this.setState({
+      isShowingPalmPreview: false,
+      track: this.props.track
+    });
     this.props.setSpotifyIsShowingArtistDetails(false);
     document.getElementsByTagName('html')[0].style.overflowY = 'auto';
   },
@@ -143,31 +166,150 @@ export default React.createClass({
     }
   },
 
+  getNextTrack(track = this.props.track) {
+    const {spotifyRecs} = this.props;
+    const tracks = spotifyRecs.get('tracks');
+    const trackIndex = tracks.indexOf(track);
+    return tracks.get(trackIndex + 1);
+  },
+
+  onModalTouchStart(e) {
+    this.setState({palmModalSlide: e.touches[0].clientX});
+  },
+
+  onModalTouchMove(e) {
+    const palmModalLeft = this.state.palmModalSlide - e.touches[0].clientX;
+    const isSwiping = palmModalLeft > 25;
+    this.setState({
+      palmModalLeft,
+      isSwiping
+    });
+  },
+
+  onModalTouchEnd() {
+    const {nextTrack, palmModalLeft} = this.state;
+    const exceedsThreshold = palmModalLeft > 100;
+    const hasNextTrack = nextTrack !== undefined;
+    if (exceedsThreshold && hasNextTrack) {
+      let wasPlayingBeforeSwipe = this.state.isPlayingPreview;
+      this.pausePreview();
+      this.setState({
+        progressBarWidth: 0,
+        shouldTransitionOut: true,
+        wasPlayingBeforeSwipe
+      });
+    }
+
+    if (!exceedsThreshold) {
+      this.setState({
+        palmModalSlide: null,
+        palmModalLeft: 0,
+        isSwiping: false
+      });
+    }
+  },
+
+  onModalTransitionEnd() {
+    const {nextTrack} = this.state;
+    this.setState({
+      track: nextTrack
+    });
+  },
+
   renderPalmPreview() {
-    const {track} = this.props;
+    const {track, nextTrack, isSwiping, shouldTransitionOut} = this.state;
     const {progressBarWidth, isPlayingPreview} = this.state;
 
     const artistName = track.getIn(['artists', 0, 'name']);
     const trackImg = track.getIn(['album', 'images', 1, 'url']);
     const trackName = track.get('name');
 
+    const nextArtistName = nextTrack.getIn(['artists', 0, 'name']);
+    const nextTrackImg = nextTrack.getIn(['album', 'images', 1, 'url']);
+    const nextTrackName = nextTrack.get('name');
+
     const palmPlayerStateIconClass = isPlayingPreview ? 'icon-pause' : 'icon-play';
 
-    return <div className="modal-palm">
-      <div className="modal-palm__content">
+    let style;
+    let nextTrackStyle;
+
+    if (shouldTransitionOut) {
+      style = {
+        transition: 'transform 500ms ease',
+        transform: 'translateX(-120%)'
+      };
+
+      nextTrackStyle = {
+        transition: 'all 500ms ease',
+        transform: 'scale(1)',
+        opacity: 1
+      }
+    } else {
+      style = {
+        transform: isSwiping ? `translateX(-${this.state.palmModalLeft}px)` : 'translateX(0px)',
+        overflowY: isSwiping ? 'hidden' : 'scroll'
+      }
+    }
+
+    return <Tappable component="div" stopPropagation={true} className="modal-palm">
+
+      {isSwiping && <div className="modal-palm__content-2" style={nextTrackStyle}>
         <div className="modal-palm__close u-mb--">
           <i className="icon-close u-p--" onClick={this.closePalmPreview} />
         </div>
+
         <div className="spotify-track-preview-palm">
-          <div className="spotify-track-preview-palm__player-icon">
-            <div className="text-center fade-in-delayed">
-              <i className={`${palmPlayerStateIconClass}`}
-                 onTouchStart={this.togglePalmPreview} />
+          <div className="spotify-track-preview-palm__album-img-container">
+            <img src={nextTrackImg} className="spotify-track-preview-palm__album-img block" />
+            <div className="spotify-track-preview-palm__player-icon">
+              <div className="text-center">
+                <i className={`${palmPlayerStateIconClass}`}
+                   onTouchStart={this.togglePalmPreview} />
+              </div>
             </div>
           </div>
 
+          <div className="spotify-track-preview-palm__body">
+            <div className="progress-bar">
+              <div className="progress-bar__progress"
+                   style={{width: `${progressBarWidth}%`}}/>
+            </div>
+
+            <div className="text-center u-pv">
+              <h3 className="u-mv0">{nextArtistName}</h3>
+              <div className="u--mt--">{nextTrackName}</div>
+            </div>
+
+            {this.props.isSpotifyUserAuthenticated ? this.renderUserPlaylists() :
+              <div className="u-ph u-pb-">
+                <button className="btn btn--small btn--pill u-1/1" onClick={this.onClickAddToPlaylistPalm}>
+                  <i className="icon-spotify"/> Add to playlist
+                </button>
+              </div>}
+          </div>
+        </div>
+      </div>}
+
+      <div className="modal-palm__content"
+           style={style}
+           onTouchStart={this.onModalTouchStart}
+           onTouchMove={this.onModalTouchMove}
+           onTouchEnd={this.onModalTouchEnd}
+           onTransitionEnd={shouldTransitionOut && this.onModalTransitionEnd}>
+
+        <div className="modal-palm__close u-mb--">
+          <i className="icon-close u-p--" onClick={this.closePalmPreview} />
+        </div>
+
+        <div className="spotify-track-preview-palm">
           <div className="spotify-track-preview-palm__album-img-container">
             <ImgLoader src={trackImg} className="spotify-track-preview-palm__album-img" />
+            <div className="spotify-track-preview-palm__player-icon">
+              <div className="text-center fade-in-delayed"
+                   onTouchStart={this.togglePalmPreview}>
+                <i className={`${palmPlayerStateIconClass}`} />
+              </div>
+            </div>
           </div>
 
           <div className="spotify-track-preview-palm__body">
@@ -189,8 +331,9 @@ export default React.createClass({
               </div>}
           </div>
         </div>
+
       </div>
-    </div>
+    </Tappable>
   },
 
   onClickAddToPlaylistPalm() {
@@ -223,10 +366,10 @@ export default React.createClass({
   togglePalmPreview(e) {
     e.preventDefault();
     e.stopPropagation();
-    document.getElementsByTagName('html')[0].style.overflowY = 'hidden';
-    if (this.state.initialScrollPosition !== document.body.scrollTop) {
-      return;
-    }
+    // document.getElementsByTagName('html')[0].style.overflowY = 'hidden';
+    // if (this.state.initialScrollPosition !== document.body.scrollTop) {
+    //   return;
+    // }
 
     if(this.state.isPlayingPreview) {
       this.pausePreview();

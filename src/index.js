@@ -12,13 +12,15 @@ import {AppContainer} from 'src/components/App.jsx!';
 import {HomeContainer} from 'src/components/Home.jsx!';
 import SpotifyLoginSuccess from 'src/components/SpotifyLoginSuccess.jsx!';
 
+import { getAccessToken } from 'src/api/spotify';
+
 import app from 'src/reducers/app';
 import spotify from 'src/reducers/spotify';
 import spotifyArtistDetails from 'src/reducers/spotify-artist-details';
 import spotifyAlbumDetails from 'src/reducers/spotify-album-details';
 
 import logger from 'src/middlewares/logger';
-import { setIsUserAuthenticated, fetchUserAndPlaylists } from 'src/action-creators/spotify';
+import { setIsUserAuthenticated, setIsAuthenticated, fetchUserAndPlaylists } from 'src/action-creators/spotify';
 import { setLocalStorageItem } from 'src/api/httpUtils';
 import 'waypoints';
 
@@ -30,8 +32,7 @@ const reducers = {
   spotify,
   spotifyArtistDetails,
   spotifyAlbumDetails
-}
-;
+};
 const store = createStore(combineReducers(reducers), applyMiddleware(logger, thunk, routingMiddleware));
 const history = syncHistoryWithStore(browserHistory, store);
 
@@ -43,16 +44,24 @@ setDevice();
 const debouncedSetDevice = debounce(setDevice, 200);
 window.addEventListener('resize', debouncedSetDevice);
 
-ReactDOM.render(
-  <Provider store={store}>
-    <Router history={history}>
-      <Route path="/" component={HomeContainer} />
-      <Route path="/app" component={AppContainer} />
-      <Route path="/spotify-login-success" component={SpotifyLoginSuccess} />
-    </Router>
-  </Provider>,
-  document.getElementById('app')
-);
+getAccessToken().then(payload => {
+  setLocalStorageItem('accessToken', payload.json.token);
+  store.dispatch(setIsAuthenticated(true));
+  init();
+});
+
+function init() {
+  ReactDOM.render(
+    <Provider store={store}>
+      <Router history={history}>
+        <Route path="/" component={HomeContainer} />
+        <Route path="/app" component={AppContainer} />
+        <Route path="/spotify-login-success" component={SpotifyLoginSuccess} />
+      </Router>
+    </Provider>,
+    document.getElementById('app')
+  );
+}
 
 window.onSpotifyLoginSuccess = function(accessToken, refreshToken){
   setLocalStorageItem('userAccessToken', accessToken);

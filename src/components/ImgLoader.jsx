@@ -10,10 +10,15 @@ export default React.createClass({
     this.loadImg();
   },
 
-  loadImg() {
+  componentWillReceiveProps(nextProps) {
+    if (this.props.src !== nextProps.src) {
+      this.loadImg(nextProps.src);
+    }
+  },
+
+  loadImg(src = this.props.src) {
     const {_img} = this.refs;
     const img = new Image();
-    const { src } = this.props;
     img.src = src;
     img.onload = e => {
       _img.src = src;
