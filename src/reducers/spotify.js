@@ -61,6 +61,7 @@ export default function(state = initialState, action = {}) {
     case 'SET_IS_FETCHING_RECS':
       return state.set('isFetchingRecs', action.isFetchingRecs);
     case 'SET_SPOTIFY_RECS':
+      action.recs.tracks = action.recs.tracks.filter(track => track.preview_url !== null);
       return state.set('recs', fromJS(action.recs));
     case 'SET_IS_LOADING_SPOTIFY_SEARCH_RESULTS':
       return state.set('isLoadingSearchResults', action.isLoading);
