@@ -276,6 +276,9 @@ export const App = React.createClass({
       <div className="master-detail">
         <div className="master-detail__sidebar">
           {artistImg ? <ImgLoader className="u-250px" src={artistImg}/> : null}
+          <h3 className="u-pl-">
+            {spotifyArtistDetails.get('name')}
+          </h3>
         </div>
         <div className="master-detail__body u-pv">
           <ul className="list-bare list-hover list-hover-light">
@@ -301,7 +304,9 @@ export const App = React.createClass({
   renderAlbumTracks(tracks) {
     return <Drawer isOpen={true} shouldAnimateInitialOpen={true}>
       <ul className="list-bare u-pv- u-pl bg-white">
-        {tracks.map(track => <li key={track.get('id')}>
+        {tracks.map(track => <li key={track.get('id')}
+                                 onMouseEnter={() => this.refs[`${track.get('id')}-preview`].play()}
+                                 onMouseLeave={() => this.refs[`${track.get('id')}-preview`].pause()}>
           {track.get('name')}
           <audio className="spotify-track__preview"
                  ref={`${track.get('id')}-preview`}
