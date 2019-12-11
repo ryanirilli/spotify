@@ -1,19 +1,33 @@
-import queryString from 'query-string';
-import { request } from './../api/httpUtils';
+import queryString from "query-string";
+import { request } from "./../api/httpUtils";
 
-const baseUrl = 'https://api.spotify.com/v1';
+const baseUrl = "https://api.spotify.com/v1";
 
 export function getAccessToken() {
-  return request('/api/v1/spotify-access-token');
+  return request("/api/v1/spotify-access-token");
 }
 
 export function login() {
-  return request('/api/v1/spotify-login');
+  return request("/api/v1/spotify-login");
 }
 
-export function getRecs(params) {
-  const _params = Object.assign({}, {limit: 100}, params);
-  return request(`${baseUrl}/recommendations?${queryString.stringify(_params)}`);
+export async function getRecs(params) {
+  const _params = Object.assign({}, { limit: 100 }, params);
+  const payload = await request(
+    `${baseUrl}/recommendations?${queryString.stringify(_params)}`
+  );
+
+  const features = await request(
+    `${baseUrl}/audio-features?ids=${payload.json.tracks
+      .map(({ id }) => id)
+      .join(",")}`
+  );
+  payload.json.tracks.forEach(track => {
+    track.features = features.json.audio_features.find(
+      ({ id }) => track.id === id
+    );
+  });
+  return payload;
 }
 
 export function search(opts) {
@@ -26,21 +40,27 @@ export function fetchUserPlaylists() {
 }
 
 export function fetchUser() {
-  return request(`${baseUrl}/me`)
+  return request(`${baseUrl}/me`);
 }
 
 export function addTrackToPlaylist(uri, userId, playlistId) {
-  return request(`${baseUrl}/users/${userId}/playlists/${playlistId}/tracks?uris=${uri}`, {method: 'post'});
+  return request(
+    `${baseUrl}/users/${userId}/playlists/${playlistId}/tracks?uris=${uri}`,
+    { method: "post" }
+  );
 }
 
 export function removeTrackFromPlaylist(uri, userId, playlistId) {
   const params = {
-    method: 'delete',
+    method: "delete",
     body: JSON.stringify({
-      tracks: [{uri}]
+      tracks: [{ uri }]
     })
   };
-  return request(`${baseUrl}/users/${userId}/playlists/${playlistId}/tracks`, params);
+  return request(
+    `${baseUrl}/users/${userId}/playlists/${playlistId}/tracks`,
+    params
+  );
 }
 
 export function fetchArtist(artistId) {
@@ -67,4 +87,4 @@ export default {
   fetchArtist,
   fetchArtistAlbums,
   fetchAlbumDetails
-}
+};
